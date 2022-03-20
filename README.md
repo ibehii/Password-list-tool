@@ -1,5 +1,6 @@
 # Password Generator
 
+https://user-images.githubusercontent.com/79264026/159163636-ee8d814a-1ea0-4e82-870b-c76ef5bd43c8.mp4
 
 
 with this script you can generate **randomly** password in 3 way:
