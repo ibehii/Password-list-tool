@@ -18,11 +18,12 @@ from shutil import move
 import urllib.request
 import pyfiglet
 
+print(Fore.CYAN + "Please wait ..." + Fore.RESET)
+
 init()
 
 # functions
 # clear screen
-
 
 def clear_screen():
     if name == 'nt':
@@ -243,7 +244,7 @@ elif (first_menu_choice == 2):
     print(Fore.YELLOW + pyfiglet.figlet_format('password',
           font='ANSI Shadow') + Fore.RESET)
     password_number = int(
-        input(Fore.BLUE + 'Enter how many passwords do you want to generate -> '))
+        input(Fore.BLUE + 'Enter how many passwords do you want to generate -> '+ Fore.RESET))
     password_length = int(
         input(Fore.BLUE + '⹃ Enter password length -> ' + Fore.RESET))
     print(Fore.BLUE + 'On it ... ' + Fore.RESET)
