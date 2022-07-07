@@ -15,7 +15,9 @@ from colorama import Fore, init
 from random import choice, randint
 from pathlib import Path
 from shutil import move
-import urllib.request
+from time import sleep
+from datetime import date
+from urllib.request import urlretrieve
 import pyfiglet
 
 print(Fore.CYAN + "Please wait ..." + Fore.RESET)
@@ -90,7 +92,7 @@ if not path.exists(pyfiglet_path + 'ANSI Shadow.flf'):
         Fore.RED + 'require font for this script is not installed. Do you want to download it ? [Y/n] ')
     if download_permistion == 'y' or download_permistion == 'Y' or download_permistion == 'yes' or download_permistion == 'Yes' or download_permistion == 'YES' or download_permistion == 'yEs' or download_permistion == 'yeS' or download_permistion == 'yES' or download_permistion == '':
         print(Fore.GREEN + 'Downloading ... ' + Fore.RESET)
-        urllib.request.urlretrieve(
+        urlretrieve(
             "https://github.com/xero/figlet-fonts/raw/master/ANSI%20Shadow.flf", 'ANSI Shadow.flf')
 
         move('ANSI Shadow.flf', pyfiglet_path+'ANSI Shadow.flf')
@@ -180,7 +182,26 @@ if(first_menu_choice == 1):
         letter = choice(passwords_list)
         generated_password = generated_password + letter
     print(Fore.BLUE + 'Your password is : ' + generated_password + Fore.RESET)
-
+    if not path.exists('.Just_one_password.txt'):
+        with open('.Just_one_password.txt','w') as fn:
+            date1 = date.today()
+            fn.write(f'modified in = [{date1}] The password: ' + generated_password+ '\n')
+            fn.close()
+    else:
+        with open('.Just_one_password.txt', 'a') as fn:
+            date1 = date.today()
+            fn.write(f"modified in =  [{date1}] The password: " + generated_password+'\n')
+                
+    sleep(1)
+    show_previous_passwords = input(
+        Fore.CYAN + '\n\n- Do you want to show previous passwords that you generated? [Y/n] ' + Fore.RESET)
+    if show_previous_passwords == 'y' or show_previous_passwords == 'Y' or show_previous_passwords == 'yes' or show_previous_passwords == 'Yes' or show_previous_passwords == 'YES' or show_previous_passwords == 'yEs' or show_previous_passwords == 'yeS' or show_previous_passwords == 'yES' or show_previous_passwords== '':
+        with open('.Just_one_password.txt', 'r') as fn:
+            content = fn.read()
+            print(content)
+            print(
+                Fore.GREEN + '\n\nThe passwords save in file name .Just_one_password.txt  ' + Fore.RESET)
+            
 # multiple passwords
 elif (first_menu_choice == 2):
     # second menu for "multiple passwords"
@@ -358,14 +379,25 @@ elif first_menu_choice == 4:
 
 # adding password list together
 elif first_menu_choice == 5:
-    print(Fore.YELLOW + pyfiglet.figlet_format('extend password',
-          font='ANSI Shadow') + "𝒍𝒊𝒔𝒕" + Fore.RESET)
+    print(Fore.YELLOW + '''███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗ 
+██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗
+█████╗   ╚███╔╝    ██║   █████╗  ██╔██╗ ██║██║  ██║
+██╔══╝   ██╔██╗    ██║   ██╔══╝  ██║╚██╗██║██║  ██║
+███████╗██╔╝ ██╗   ██║   ███████╗██║ ╚████║██████╔╝
+╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ 
+                                                   
+██████╗  █████╗ ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██████╗ 
+██╔══██╗██╔══██╗██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██╔══██╗
+██████╔╝███████║███████╗███████╗██║ █╗ ██║██║   ██║██████╔╝██║  ██║
+██╔═══╝ ██╔══██║╚════██║╚════██║██║███╗██║██║   ██║██╔══██╗██║  ██║
+██║     ██║  ██║███████║███████║╚███╔███╔╝╚██████╔╝██║  ██║██████╔╝
+╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ 𝒍𝒊𝒔𝒕 '''+ Fore.RESET)
 
     # getting all file name from user
     all_password_list_name = []
     all_password_list_content = []
     file_name = input(
-        Fore.MAGENTA + '\n- Enter your file name -> ' + Fore.RESET)
+        Fore.MAGENTA + '\n1 - Enter your file name -> ' + Fore.RESET)
     all_password_list_name.append(file_name)
     # getting name of the file from user
     status = True
