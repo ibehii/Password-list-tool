@@ -10,13 +10,13 @@
 #  ____________________________________________
 
 #import part
-from os import name, system, path
+from os import name, system, path, getcwd
 from colorama import Fore, init
 from random import choice, randint
 from pathlib import Path
 from shutil import move
 from time import sleep
-from datetime import date
+from datetime import date, datetime
 from urllib.request import urlretrieve
 import pyfiglet
 
@@ -126,6 +126,9 @@ if(first_menu_choice == 1):
         Fore.MAGENTA + ' ⹃ Enter number of your choices. e.g : 1 2 5 -> ' + Fore.RESET)
     # check if user Enter their choice correctly
     second_menu_choice = list(second_menu_choice)
+    if '1' not in second_menu_choice and '2' not in second_menu_choice and '3' not in second_menu_choice  and '4' not in second_menu_choice  and '5' not in second_menu_choice:
+        exit(Fore.RED + 'Please, Enter number from menu correctly and separate them with space (e.g : 1 2 5)' + Fore.RESET)
+
     if '1' in second_menu_choice:
         if second_menu_choice.count('1') != 1:
             exit(Fore.RED + 'Please, Enter number from menu correctly and separate them with space (e.g : 1 2 5)' + Fore.RESET)
@@ -185,12 +188,17 @@ if(first_menu_choice == 1):
     if not path.exists('.Just_one_password.txt'):
         with open('.Just_one_password.txt','w') as fn:
             date1 = date.today()
-            fn.write(f'modified in = [{date1}] The password: ' + generated_password+ '\n')
+            time = datetime.now().strftime("%H:%M:%S")
+            pwd = getcwd()
+            fn.write(f'modified in = [{date1, " - ",time}] The password: ' + generated_password+ '\n')
+            
             fn.close()
     else:
         with open('.Just_one_password.txt', 'a') as fn:
             date1 = date.today()
-            fn.write(f"modified in =  [{date1}] The password: " + generated_password+'\n')
+            time = datetime.now().strftime("%H:%M:%S")
+            pwd = getcwd()
+            fn.write(f"\nmodified in =  [{date1} {time}] The password = " + generated_password+'\n')
                 
     sleep(1)
     show_previous_passwords = input(
@@ -200,7 +208,7 @@ if(first_menu_choice == 1):
             content = fn.read()
             print(content)
             print(
-                Fore.GREEN + '\n\nThe passwords save in file name .Just_one_password.txt  ' + Fore.RESET)
+                Fore.GREEN + '\n\nThe passwords save in ' + pwd + '/.Just_one_password.txt' + Fore.RESET)
             
 # multiple passwords
 elif (first_menu_choice == 2):
@@ -216,6 +224,8 @@ elif (first_menu_choice == 2):
 
     # check if user Enter their choice correctly
     second_menu_choice = list(second_menu_choice)
+    if '1' not in second_menu_choice and '2' not in second_menu_choice and '3' not in second_menu_choice and '4' not in second_menu_choice and '5' not in second_menu_choice:
+        exit(Fore.RED + 'Please, Enter number from menu correctly and separate them with space (e.g : 1 2 5)' + Fore.RESET)
     if '1' in second_menu_choice:
         if second_menu_choice.count('1') != 1:
             print(Fore.RED + 'Please, Enter number from menu correctly and separate them with space (e.g : 1 2 5)' + Fore.RESET)
