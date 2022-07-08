@@ -35,7 +35,7 @@ In this menu you choose length of password. For example if you enter **8** the s
 Also we save the password that you generate in hidden file name `.Just_one_password.txt`. you can access to your previous password in the end of **generate one password** part
 
 ---
-# Generate multiple password
+# Generate multiple password | password list
 In this part you can generate passwords and export it as txt file. Actually you are creating password list.
 
 ![multiple1](https://user-images.githubusercontent.com/79264026/178008895-0d931dd5-da7b-4c75-88d0-8bdedacbfe47.png)
