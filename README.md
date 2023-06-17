@@ -14,7 +14,7 @@ for install colorama : `pip install colorama`\
 for install pyfiglet : `pip install pyfiglet`  
 
 ![](https://user-images.githubusercontent.com/79264026/178007880-62568118-e073-4c17-8946-8c19808293fd.png)\
-Also pyfiglet need [ANSI Shadow](https://github.com/xero/figlet-fonts/blob/master/ANSI%20Shadow.flf) font but you don't need to install it, When you run script if you don't have the font it will install.
+Also pyfiglet need [ANSI Shadow](https://github.com/xero/figlet-fonts/blob/master/ANSI%20Shadow.flf) font that will install automatically after running script.
 
 ---
 # Generate one password
