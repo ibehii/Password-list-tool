@@ -3,48 +3,52 @@
 
 With this script you can :
 - [Generate one password](#generate-one-password)
-- [Generate multiple password](#generate-multiple-password)
-- [sort password list](#sort-password-list)
-- [delete duplicate passwords in password list](#delete-duplicate-passwords-in-password-list)
-- [add password lists together](#add-password-lists-together)
+- [Generate password list](#generate-password-list)
+- [Sort password list](#sort-password-list)
+- [Delete duplicate passwords in password list](#delete-duplicate-passwords-in-password-list)
+- [Merge password lists](#merge-password-lists)
 ---
 # Dependencies 
-This script use [**pyfiglet**](https://pypi.org/project/pyfiglet/) and [**colorama**](https://pypi.org/project/colorama/) so you need to install them with these commands :\
-for install colorama : `pip install colorama`\
-for install pyfiglet : `pip install pyfiglet`  
+This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/) and [**colorama**](https://pypi.org/project/colorama/) as external library.\
+By running the program this libraries will be downloaded, but if there were any problem you can install them manually by following command :\
+> for install colorama : `pip install colorama`\
+> for install pyfiglet : `pip install pyfiglet`  
 
-![](https://user-images.githubusercontent.com/79264026/178007880-62568118-e073-4c17-8946-8c19808293fd.png)\
-Also pyfiglet need [ANSI Shadow](https://github.com/xero/figlet-fonts/blob/master/ANSI%20Shadow.flf) font that will install automatically after running script.
+![](https://user-images.githubusercontent.com/79264026/178007880-62568118-e073-4c17-8946-8c19808293fd.png)
+Also program need [ANSI Shadow](https://github.com/xero/figlet-fonts/blob/master/ANSI%20Shadow.flf) that will be downloaded after running program
 
 ---
-# Generate one password
+# YouTube Tutorial
+![](https://youtu.be/hlkBS0gWI7g)
+---
+# Generate One Password
 In this part you can generate one password quickly.
-It's good for sign up in site or app that you want use strong password and then save password somewhere .
+It's really good for signing up in sites or apps when you want use strong password.\
+![]()
+Also after generating the password it will be save in a **json** file, so you can access it later by: -> running program -> Just one password -> Show previous passwords
+![](screenshot)
 
-![generate-one-password1](https://user-images.githubusercontent.com/79264026/178008051-5cac436d-4b55-4050-b1a9-1a0185f0c2be.png)
+In this menu you can choose what characters you want in the password.\
+When you want to enter number of your choices, pay attention that numbers must be between **1-5** -> `1 2 5` \
+And use **spaces** when you want to separate 
 
-In this menu you can choose which characters be on you password. Enter number of your choice like this -> `1 2 5` \
-if you want to separate the number use space. if you use anything else you will get error.
-
-![generate-one-password2](https://user-images.githubusercontent.com/79264026/178008554-51322498-7582-465a-8806-58037441f4a5.png)
+![](screenshot)
 
 In this menu you choose length of password. For example if you enter **8** the script will return a password with 8 characters. like -> `12345678`
 
-![generate-one-password3](https://user-images.githubusercontent.com/79264026/178008765-d489eeec-453d-45d3-9c76-1741e3d25a47.png)
-
-Also we save the password that you generate in hidden file name `.Just_one_password.txt`. you can access to your previous password in the end of **generate one password** part
+![](screenshot)
+We save the passwords that you generate in **Just_one_password.json** file.
 
 ---
-# Generate multiple password | password list
-In this part you can generate passwords and export it as txt file. Actually you are creating password list.
+# Generate password list
+In this part you can generate passwords and export it as txt file.
 
-![multiple1](https://user-images.githubusercontent.com/79264026/178008895-0d931dd5-da7b-4c75-88d0-8bdedacbfe47.png)
+![](screenshot)
+In this menu you can choose what characters you want in the password.\
+When you want to enter number of your choices, pay attention that numbers must be between **1-5** -> `1 2 5` \
+And use **spaces** when you want to separate 
 
-This part is like [Generate one password](#generate-one-password). In this menu you can choose which characters be on you passwords. Enter number of your choice like this -> `1 2 5` \
-if you want to separate the number use space. if you use anything else you will get error.
-
-![Generate multiple password2](https://user-images.githubusercontent.com/79264026/178008959-2b8b314b-7628-4131-8e5a-94357f7864df.png)
-
+![](screenshot)
 
 In this menu you choose **number** of password that script will generate. In second question you choose length of password. For example if you enter **8** the script will return a password with 8 characters. like -> `12345678`
 
@@ -52,30 +56,41 @@ In this menu you choose **number** of password that script will generate. In sec
 # sort password list
 On this part you can sort your password list. For example if your password is like this `125, 142, 111` it will change to -> `111, 125, 142` .
 
-![sort-password-list](https://user-images.githubusercontent.com/79264026/178009195-374d9c3f-cf80-4501-8907-12319a889416.png)
-
+![](screenshot)
 
 Only thing that you must do is enter name of your file :)\
-Remember that if your file is not in same directory of terminal enter complete path of your password list.\
-For example :  I'm running terminal in `/home/user/` directory but the password list is in `/home/user/Desktop/` so in script i must enter `/home/user/Desktop/Your_file_name`.\
-but if I'm running terminal in `/home/user/` and my password list is in there too, I just need to enter name of the password list
+**If you get "file is not exists. Enter file name correctly !" error but you are sure that file exist try to enter complete path of file**
+## finding complete path
+In windows:
+> Right click the file then choose copy as a path option\
+
+![]()
+
+In linux:
+> use "pwd" command and add file name at the end of it
 
 ---
 # delete duplicate passwords in password list
-If one password is repeated in password list this part of script will delete it and keep just one of them.
+If one password is repeated in password list this part of program will delete it and keep just one of them.
 
-![delete duplicate](https://user-images.githubusercontent.com/79264026/178009351-5c51e989-7369-4d75-8994-aea104dc2ffa.png)
+![](screenshot)
+On this menu we have two method **slow method** and **fast method**.
 
+**Slow method** use more memory and it's take long time to delete duplicates, but it doesn't disrupts the order of password list .
 
-On this menu we have to meted **slow** and **fast**.
+**Fast method** It's much faster than slow mood but only problem is that it disrupts the order of your password list. 
+if you don't care about the order of your file use this method and then sort it with [sort password list](#sort-password-list) part.
 
-**Slow mood** use more memory and it's take long time to delete duplicates. but it's stable and it doesn't disrupts the order of password list .
+**If you get "file is not exists. Enter file name correctly !" error but you are sure that file exist try to enter complete path of file**
 
-**Fast mood** It's much faster than slow mood but only problem is it's disrupts the order of your password list. 
-if you don't care about the order of your file use this meted and then sort it with [sort password list](#sort-password-list) part.
+[**Explanation for finding complete path**](#finding-complete-path)
 
 ---
-# add password lists together
-In this part of script you can add your password lists together and make your password lists into single file.
+# Merge password lists
+In this part of program you can merge your password lists and make your password lists into single file.
+![](screenshot)
 
- ![add-password-list-together](https://user-images.githubusercontent.com/79264026/178009399-e1947fcb-5453-4eb2-a5a7-3a2677ef42ee.png)
+**If you get "file is not exists. Enter file name correctly !" error but you are sure that file exist try to enter complete path of file**
+
+[**Explanation for finding complete path**](#finding-complete-path)
+ 
