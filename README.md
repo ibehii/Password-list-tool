@@ -1,7 +1,7 @@
 # **Password list tool**
 ![](https://skillicons.dev/icons?i=py,vscode,md)
 
-With this script you can :
+This script is a password list manager that you can :
 - [Generate one password](#generate-one-password)
 - [Generate password list](#generate-password-list)
 - [Sort password list](#sort-password-list)
@@ -10,13 +10,8 @@ With this script you can :
 ---
 # Dependencies 
 This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/) and [**colorama**](https://pypi.org/project/colorama/) as external library.\
-By running the program this libraries will be downloaded, but if there were any problem you can install them manually by following command :\
-> for install colorama : `pip install colorama`\
-> for install pyfiglet : `pip install pyfiglet`  
-
-![](https://user-images.githubusercontent.com/79264026/178007880-62568118-e073-4c17-8946-8c19808293fd.png)\
-Also program need [ANSI Shadow](https://github.com/xero/figlet-fonts/blob/master/ANSI%20Shadow.flf) that will be downloaded after running program
-
+By running the program this libraries will be downloaded, but if there were any problem you can install them manually by following command :
+> pip install -r requirements.txt
 ---
 # YouTube Tutorial
 https://youtu.be/hlkBS0gWI7g
