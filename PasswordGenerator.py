@@ -420,7 +420,7 @@ elif (first_menu_choice == 4):
                 Fore.GREEN + '[1] - Slow method [won\'t change the order]\n[2] - Fast method [change the order]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
         except ValueError:
             exit(Fore.RED + '\nError! Only numbers are acceptable.' + Fore.RESET)
-        file_name = input(
+        UserFileName = input(
             Fore.MAGENTA + '\n⹃ Enter path of your password list -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
@@ -428,10 +428,10 @@ elif (first_menu_choice == 4):
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
 # ======== # check if the user file actually exist # ======== #
-    exists_checker(file_name)
+    exists_checker(UserFileName)
     print(Fore.YELLOW + 'Starting the operation' + Fore.RESET)
     if which_method == 1:
-        fn = open(file_name, 'r')
+        fn = open(UserFileName, 'r')
         the_file_content = fn.readlines()
 
  # ======== # The last line doesn't have \n so when it sorted it will connect to another item # ======== #
@@ -469,18 +469,19 @@ elif (first_menu_choice == 4):
 # ======== # Using Fast Mode # ======== #
     elif which_method == 2:
         print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
-        fn = open(file_name, "r")
 
+        fn = open(UserFileName, "r")
         the_file_content = set(fn.readlines())
+        
         print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
     else:
         exit(Fore.RED + "Please enter the number of the part that you need correctly!" + Fore.RESET)
     
     # make the list string and put it into file
-    with open(file_name, 'w') as fn_w:
+    with open(UserFileName, 'w') as fn_w:
         fn_w.writelines(the_file_content)
         fn_w.close()
-    print(Fore.YELLOW + '\nYour file save as : ' + file_name + Fore.RESET)
+    print(Fore.YELLOW + '\nYour file save as : ' + UserFileName + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
 
 # ======== # Merge password lists # ======== #
@@ -491,40 +492,40 @@ elif (first_menu_choice == 5):
 # ======== # getting all file name from user # ======== #
     all_password_list_content: list = list() 
     try:
-        file_name = input(
+        file_names = input(
             Fore.MAGENTA + '\n1 - Enter your file path -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except:
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
-    exists_checker(file_name)
-    file_name = open(file_name, 'r').readlines()
+    exists_checker(file_names)
+    FileData = open(file_names, 'r').readlines()
         
     #The last line doesn't have \n so when it sorted it will connect to another item
-    file_name[-1] +='\n'
-    all_password_list_content.extend(file_name)
+    FileData[-1] +='\n'
+    all_password_list_content.extend(FileData)
 
     # getting name of the file from user
     input_number = 2
     while True:
         try:
-            file_name = input(
+            file_names = input(
                 Fore.MAGENTA + f'{input_number} - Enter your file path -> ' + Fore.RESET)
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
             print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
-        exists_checker(file_name)
-        file_name = open(file_name, 'r').readlines()
+        exists_checker(file_names)
+        FileData = open(file_names, 'r').readlines()
         
         #The last line doesn't have \n so when it sorted it will connect to another item
-        file_name[-1] = file_name[-1] +'\n'
+        FileData[-1] = FileData[-1] +'\n'
 
-        all_password_list_content.extend(file_name)
+        all_password_list_content.extend(FileData)
         user_request = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
-        if user_request == 'y' or user_request == 'yes' or user_request == '':
+        if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
             clear_screen()
             print(Fore.YELLOW + pyfiglet.figlet_format('Pass list merger',
                   font='ANSI Shadow') + Fore.RESET)
@@ -537,10 +538,10 @@ elif (first_menu_choice == 5):
 # ======== # set file name # ======== #
     if path.exists(__file__.replace('PasswordGenerator.py', 'passwords.txt')):
         rename_if_file_exist()
-    with open(file_name, 'w') as f:
+    with open(__file__.replace('PasswordGenerator.py', file_name), 'w') as f:
         f.writelines(all_password_list_content)
 
-    print(Fore.YELLOW + 'Your file save as : ' + file_name + Fore.RESET)
+    print(Fore.YELLOW + 'Your file save as : ' + __file__.replace('PasswordGenerator.py', file_name) + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
 else:
         exit(Fore.RED + 'Error ! Pay attention that your answer must be a number between 1-5.' + Fore.RESET)
