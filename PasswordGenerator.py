@@ -5,13 +5,15 @@
 
 # ======== # import built-in modules # ======== #
 from os import name, system, path, rename
-from random import choice
+from secrets import choice
 from shutil import move
 from time import sleep
 from datetime import datetime
 from urllib.request import urlretrieve
 from urllib.error import URLError
+from tqdm import tqdm
 import json
+import string
 
 # ======== # Rename Project To Its Original name # ======== #
 if ("PasswordGenerator.py" not in __file__):
@@ -35,66 +37,58 @@ print(Fore.CYAN + "Please wait ..." + Fore.RESET)
 init()
 
 # ======== # functions # ======== #
-def clear_screen():
-    if name == 'nt':
+def __clear_screen__() -> None:
+    if (name == 'nt'):
         system('cls')
     else:
         system('clear')
 
 
-# for adding characters to this list (in forward this change to list)
-passwords_list = ''
+# for adding characters to this list
+char_list: list[str] = list()
 
+def numbers() -> None:
+    global char_list
+    char_list.extend(string.digits)
 
-def symbols():
-    characters = '!@#$%^&*='
-    global passwords_list
-    passwords_list = passwords_list + characters
+def lowercase() -> None:
+    global char_list
+    char_list.extend(string.ascii_lowercase)
 
+def uppercase() -> None:
+    global char_list
+    char_list.extend(string.ascii_uppercase)
+    
+def symbols() -> None:
+    characters: list[str] = ['!', '@', '#', '$', '%', '^', '&', '*', '=']
+    global char_list
+    char_list.extend(characters)
 
-def numbers():
-    characters = '1234567890'
-    global passwords_list
-    passwords_list = passwords_list + characters
-
-
-def lowercase():
-    characters = 'abcdefghijklmnopqrstuvwxyz'
-    global passwords_list
-    passwords_list = passwords_list + characters
-
-
-def uppercase():
-    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    global passwords_list
-    passwords_list = passwords_list + characters
-
-
-def Ambiguous():
-    characters = '{}[]()/\\\'"`~,;:.<>'
-    global passwords_list
-    passwords_list = passwords_list + characters
+def Ambiguous() -> None:
+    characters: list[str] = ['{', '}', '[', ']', '(', ')', '/', '\\', "'", '"', '~' ',', ';', ':', '.', '<', '>']
+    global char_list
+    char_list.extend(characters)
 
 # If passwords.txt exist adding number at end of it 
 file_name : str = 'passwords.txt'
-def rename_if_file_exist():
+def __rename_if_file_exist__() -> None:
     file_name_number = 1
     while path.exists(f'passwords{str(file_name_number)}.txt'):
         file_name_number += 1
     global file_name
     file_name = f'passwords{str(file_name_number)}.txt'
 
-def exists_checker(the_path):
-    if not path.exists(the_path):
+def __exists_checker__(path) -> None:
+    if not path.exists(path):
         exit(
-            Fore.RED + f'"{the_path}" is not exists. Enter file name correctly !' + Fore.RESET)
+            Fore.RED + f'"{path}" is not exists. Enter file name correctly !' + Fore.RESET)
 
 
 # ======== # Install Pyfiglet ANSI Shadow Font # ======== #
 if name == 'nt':
-    pyfiglet_path = pyfiglet.__file__.replace('__init__.py', 'fonts\\')
+    pyfiglet_path: str = pyfiglet.__file__.replace('__init__.py', 'fonts\\')
 else:
-    pyfiglet_path = pyfiglet.__file__.replace('__init__.py', 'fonts/')
+    pyfiglet_path: str = pyfiglet.__file__.replace('__init__.py', 'fonts/')
 if not path.exists(pyfiglet_path + 'ANSI Shadow.flf'):
         try:
             move(__file__.replace('PasswordGenerator.py', 'ANSI Shadow.flf'), pyfiglet_path + 'ANSI Shadow.flf')
@@ -107,7 +101,8 @@ if not path.exists(pyfiglet_path + 'ANSI Shadow.flf'):
                 move('ANSI Shadow.flf', pyfiglet_path + 'ANSI Shadow.flf')
             except URLError:
                 exit(Fore.RED + "Couldn't connect to server.\nCheck your internet connection and try again" + Fore.RESET)
-clear_screen()
+
+__clear_screen__()
 
 # ======== # Starting Menu # ======== #
 print(Fore.YELLOW + pyfiglet.figlet_format('Password tool', font='ANSI Shadow') + Fore.GREEN +
@@ -123,9 +118,8 @@ except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
 except ValueError:
     exit(Fore.RED + 'Error ! Pay attention that your answer must be a number between 1-5.' + Fore.RESET)
-    
 
-clear_screen()
+__clear_screen__()
 
 # ======== # One Password # ======== #
 if(first_menu_choice == 1):
@@ -143,8 +137,8 @@ if(first_menu_choice == 1):
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
 # ======== # Show previous passwords # ======== #
-    if second_menu_choice == 1:
-        clear_screen()
+    if (second_menu_choice == 1):
+        __clear_screen__()
         print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow'))
         try:
             password_key: str = input(
@@ -168,15 +162,15 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
     
 # ======== # Generate a password # ======== #
     elif (second_menu_choice == 2): 
-        clear_screen()
+        __clear_screen__()
         print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') + Fore.GREEN + '''[1] - Include Symbols ( e.g. !@#$%^&* )
 [2] - Include Numbers ( e.g. 12345 )
 [3] - Include Lowercase Characters ( e.g. abcdefgh )
 [4] - Include Uppercase Characters ( e.g. ABCDEFGH )
-[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \ ' " ` ~ , ; : . < > )
+[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \\ ' " ~ , ; : . < > )
     ''' + Fore.RESET)
         try:
-            included_obj: str = input(
+            included_obj: list[str] = input(
                 Fore.MAGENTA + ' ⹃ Enter number of your choices. e.g : 1 2 5 -> ' + Fore.RESET).split()
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
@@ -204,10 +198,7 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
         if('5' in included_obj):
             Ambiguous()
 
-        # changing to list that can use random.choice method
-        passwords_list = list(passwords_list)
-
-        clear_screen()
+        __clear_screen__()
 
 # ======== # Third Menu For One Password # ======== #
         print(Fore.YELLOW + pyfiglet.figlet_format('passwords',
@@ -222,13 +213,13 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
 
 
         # the password
-        generated_password = ''
+        generated_password: str = ''
 
 # ======== # Generating password # ======== #
         try:
-            for _ in range(password_length):
-                letter = choice(passwords_list)
-                generated_password = generated_password + letter
+            for _ in tqdm(range(password_length)):
+                letter: str = choice(char_list)
+                generated_password: str = generated_password + letter
         except KeyboardInterrupt:
                 exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
@@ -246,13 +237,13 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
                                 'min':datetime.now().strftime("%M")
                                 }
                 }
-                password_data = json.dump(password_data,f ,indent=4)
+                json.dump(password_data, f, indent=4)
             print(Fore.LIGHTGREEN_EX + 'Your passwords by key of => ' + Fore.CYAN + 'password_1' + Fore.LIGHTGREEN_EX +
                    '\nUse this key to access the password on Just "one password/Show previous passwords" section' + Fore.RESET)
         else:
             with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'r') as fn:
-                password_data = json.load(fn)
-                len_password_data = len(password_data)
+                password_data: dict = json.load(fn)
+                len_password_data: int = len(password_data)
                 with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'w') as fn:
                     password_data[f'password_{len_password_data+1}'] = {
                                 'password': generated_password, 
@@ -261,7 +252,7 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
                                 'day':datetime.now().strftime("%d"),
                                 'hour':datetime.now().strftime("%H"),
                                 'min':datetime.now().strftime("%M")}
-                    password_data = json.dump(password_data,fn ,indent=4)
+                    json.dump(password_data, fn, indent=4)
                 
                 print(Fore.LIGHTGREEN_EX + 'Your passwords by key of => ' + Fore.CYAN + f'password_{len_password_data+1}' + Fore.LIGHTGREEN_EX +
                  '\nUse this key to access the password on "Just one password/Show previous passwords" section' + Fore.RESET)
@@ -276,10 +267,10 @@ elif (first_menu_choice == 2):
 [2] - Include Numbers ( e.g. 12345 )
 [3] - Include Lowercase Characters ( e.g. abcdefgh )
 [4] - Include Uppercase Characters ( e.g. ABCDEFGH )
-[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \ ' " ` ~ , ; : . < > )
+[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \\ ' " ~ , ; : . < > )
 ''' + Fore.RESET)
     try:
-        included_obj: str = input(
+        included_obj: list[str] = input(
             Fore.MAGENTA + ' ⹃ Enter number of your choices. e.g : 1 2 5 -> ' + Fore.RESET).split()
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
@@ -306,10 +297,7 @@ elif (first_menu_choice == 2):
     if('5' in included_obj):
         Ambiguous()
 
-    # changing to list that can use in random.choice method
-    passwords_list = list(passwords_list)
-
-    clear_screen()
+    __clear_screen__()
     
 # ======== # Third Menu For "multiple passwords" # ======== #
     print(Fore.YELLOW + pyfiglet.figlet_format('password',
@@ -326,11 +314,10 @@ elif (first_menu_choice == 2):
     if (password_number > 500_000 or password_length > 100):
         print(Fore.RED + 'Warning! You are going to produce huge amount of passwords this may take a long time and takes resources' + Fore.RESET)
         sleep(3)
-    print(Fore.BLUE + 'On it ... ' + Fore.RESET)
 
     while path.exists(__file__.replace('PasswordGenerator.py', file_name)):
-        rename_if_file_exist()
-    PasswordFilePath = __file__.replace('PasswordGenerator.py', file_name)
+        __rename_if_file_exist__()
+    PasswordFilePath: str = __file__.replace('PasswordGenerator.py', file_name)
 
     try:
 # ======== # Generating The Passwords # ======== #
@@ -338,10 +325,10 @@ elif (first_menu_choice == 2):
             generated_passwords: set = set()
             temp_generated_password: str = str()
             # first 'for' is for number of password that must generate
-            for _ in range(password_number):
+            for _ in tqdm(range(password_number)):
                 # second 'for' is for length of password that must generate
                 for _1 in range(password_length):
-                    temp_generated_password += choice(passwords_list)
+                    temp_generated_password += choice(char_list)
                 generated_passwords.add(temp_generated_password + '\n')
                 temp_generated_password = str()
 
@@ -354,10 +341,10 @@ elif (first_menu_choice == 2):
             generated_passwords : set = set()
             temp_generated_password: str = str()
             open(PasswordFilePath, 'w')
-            for _ in range(password_number):
+            for _ in tqdm(range(password_number)):
                 # second 'for' is for length of password that must generate
                 for _1 in range(password_length):
-                    temp_generated_password += choice(passwords_list)
+                    temp_generated_password += choice(char_list)
                 generated_passwords.add(temp_generated_password + '\n')
                 temp_generated_password: str = str()
 
@@ -371,8 +358,6 @@ elif (first_menu_choice == 2):
                     f.writelines(generated_passwords)
                     generated_passwords.clear()
 
-                         
-        sleep(1.5)
         print(Fore.GREEN + '\nThe operation was successful!' + Fore.RESET)
         print(Fore.YELLOW + '\nPassword list save as : ' + PasswordFilePath + Fore.RESET)
     except KeyboardInterrupt:
@@ -392,7 +377,7 @@ elif (first_menu_choice == 3):
     except:
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
-    exists_checker(file_name)
+    __exists_checker__(file_name)
     print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
     with open(file_name, 'r') as f:
         sorted_fn : list = f.readlines()
@@ -417,10 +402,10 @@ elif (first_menu_choice == 4):
     try:
         try:
             which_method = int(input(
-                Fore.GREEN + '[1] - Slow method [won\'t change the order]\n[2] - Fast method [change the order]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
+                Fore.GREEN + '[1] - Method 1 [won\'t change the order]\n[2] - Method 2 [change the order, but faster]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
         except ValueError:
             exit(Fore.RED + '\nError! Only numbers are acceptable.' + Fore.RESET)
-        UserFileName = input(
+        UserFileName: str = input(
             Fore.MAGENTA + '\n⹃ Enter path of your password list -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
@@ -428,61 +413,30 @@ elif (first_menu_choice == 4):
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
 # ======== # check if the user file actually exist # ======== #
-    exists_checker(UserFileName)
+    __exists_checker__(UserFileName)
     print(Fore.YELLOW + 'Starting the operation' + Fore.RESET)
-    if which_method == 1:
-        fn = open(UserFileName, 'r')
-        the_file_content = fn.readlines()
+    if (which_method == 1):
+        with open(UserFileName, 'r+') as fn:
+            the_file_content: list[str] = fn.readlines()
 
  # ======== # The last line doesn't have \n so when it sorted it will connect to another item # ======== #
-        the_file_content[-1] = the_file_content[-1] +'\n'
-
-        # notice user if their system can handle the file
-        if len(the_file_content) > 1_000_000:
-            print(Fore.RED + 
-                'Warning! You are going to produce huge amount of passwords this may take a long time and takes memory' + Fore.RESET)
-
-            system_permission = input(
-                Fore.GREEN + 'Do you want to continue ? [y/N] ' + Fore.RESET)
-            if system_permission.lower() == 'y' or system_permission.lower() == 'yes':
-                print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
-
-# =========== # removing duplicate in list # =========== #
-                for i in the_file_content:
-                    count_i = the_file_content.count(i)
-                    if the_file_content.count(i) != 1:
-                        for k in range(count_i-1):
-                            the_file_content.remove(i)
-                print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
-                
-            else:
-                exit(Fore.RED + '\nPermission denied!' + Fore.RESET)
-        else:
-# ======== # Using Slow Mode # ======== #
-            for i in the_file_content:
-                count_i = the_file_content.count(i)
-                if the_file_content.count(i) != 1:
-                    for k in range(count_i-1):
-                        the_file_content.remove(i)
-            print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
-
+            the_file_content[-1] = the_file_content[-1] +'\n'
+            the_file_content: list[str] = list(dict.fromkeys(the_file_content).keys())
+            fn.writelines(the_file_content)
+            fn.close()
+            
 # ======== # Using Fast Mode # ======== #
-    elif which_method == 2:
+    elif (which_method == 2):
         print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
 
-        fn = open(UserFileName, "r")
-        the_file_content = set(fn.readlines())
+        with open(UserFileName, "r+") as fn:
+            the_file_content: set[str] = set(fn.readlines())
+            fn.writelines(the_file_content)
+            fn.close()
         
         print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
     else:
         exit(Fore.RED + "Please enter the number of the part that you need correctly!" + Fore.RESET)
-    
-    # make the list string and put it into file
-    with open(UserFileName, 'w') as fn_w:
-        fn_w.writelines(the_file_content)
-        fn_w.close()
-    print(Fore.YELLOW + '\nYour file save as : ' + UserFileName + Fore.RESET)
-    print(Fore.GREEN + 'Done !' + Fore.RESET)
 
 # ======== # Merge password lists # ======== #
 elif (first_menu_choice == 5):
@@ -492,14 +446,14 @@ elif (first_menu_choice == 5):
 # ======== # getting all file name from user # ======== #
     all_password_list_content: list = list() 
     try:
-        file_names = input(
+        file_names: str = input(
             Fore.MAGENTA + '\n1 - Enter your file path -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except:
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
-    exists_checker(file_names)
-    FileData = open(file_names, 'r').readlines()
+    __exists_checker__(file_names)
+    FileData: list[str] = open(file_names, 'r').readlines()
         
     #The last line doesn't have \n so when it sorted it will connect to another item
     FileData[-1] +='\n'
@@ -516,17 +470,17 @@ elif (first_menu_choice == 5):
         except:
             print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
-        exists_checker(file_names)
+        __exists_checker__(file_names)
         FileData = open(file_names, 'r').readlines()
         
         #The last line doesn't have \n so when it sorted it will connect to another item
         FileData[-1] = FileData[-1] +'\n'
 
         all_password_list_content.extend(FileData)
-        user_request = input(
+        user_request: str = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
         if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
-            clear_screen()
+            __clear_screen__()
             print(Fore.YELLOW + pyfiglet.figlet_format('Pass list merger',
                   font='ANSI Shadow') + Fore.RESET)
             input_number += 1
@@ -537,7 +491,7 @@ elif (first_menu_choice == 5):
 
 # ======== # set file name # ======== #
     if path.exists(__file__.replace('PasswordGenerator.py', 'passwords.txt')):
-        rename_if_file_exist()
+        __rename_if_file_exist__()
     with open(__file__.replace('PasswordGenerator.py', file_name), 'w') as f:
         f.writelines(all_password_list_content)
 
