@@ -463,7 +463,7 @@ elif (first_menu_choice == 5):
             font='ANSI Shadow') + Fore.RESET)
     
 # ======== # getting all file name from user # ======== #
-    all_password_list_contents: list = list() 
+    FilesContents: list = list() 
     try:
         file_name: str = input(
             Fore.MAGENTA + '\n1 - Enter your file path -> ' + Fore.RESET)
@@ -480,7 +480,7 @@ elif (first_menu_choice == 5):
             exit(Fore.RED + f'We don\'t have permission to read the {file_name} file' + Fore.RESET)   
     #The last line doesn't have \n so when it sorted it will connect to another item
     FileData[-1] +='\n'
-    all_password_list_contents.extend(FileData)
+    FilesContents.extend(FileData)
 
     # getting name of the file from user
     input_number = 2
@@ -504,7 +504,7 @@ elif (first_menu_choice == 5):
         #The last line doesn't have \n so when it sorted it will connect to another item
         FileData[-1] = FileData[-1] +'\n'
 
-        all_password_list_contents.extend(FileData)
+        FilesContents.extend(FileData)
         user_request: str = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
         if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
@@ -521,7 +521,7 @@ elif (first_menu_choice == 5):
     if path.exists(__file__.replace('PasswordGenerator.py', 'passwords.txt')):
         __rename_if_file_exist__()
     with open(__file__.replace('PasswordGenerator.py', file_name), 'w') as f:
-        f.writelines(all_password_list_contents)
+        f.writelines(FilesContents)
 
     print(Fore.YELLOW + 'Your file save as : ' + __file__.replace('PasswordGenerator.py', file_name) + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
