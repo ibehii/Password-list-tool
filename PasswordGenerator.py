@@ -78,10 +78,10 @@ def __rename_if_file_exist__() -> None:
     global file_name
     file_name = f'passwords{str(file_name_number)}.txt'
 
-def __exists_checker__(path) -> None:
-    if not path.exists(path):
+def __exists_checker__(FilePath) -> None:
+    if not path.exists(FilePath):
         exit(
-            Fore.RED + f'"{path}" is not exists. Enter file name correctly !' + Fore.RESET)
+            Fore.RED + f'"{FilePath}" is not exists. Enter file name correctly !' + Fore.RESET)
 
 
 # ======== # Install Pyfiglet ANSI Shadow Font # ======== #
@@ -106,11 +106,11 @@ __clear_screen__()
 
 # ======== # Starting Menu # ======== #
 print(Fore.YELLOW + pyfiglet.figlet_format('Password tool', font='ANSI Shadow') + Fore.GREEN +
-      '''[1] - Just one password  
-[2] - Generate password list
-[3] - Sort password list
-[4] - Delete duplicate password in password list
-[5] - Merge password lists\n''' + Fore.RESET)
+      f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Just one password  
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Generate password list
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Sort password list
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Delete duplicate password in password list
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '5' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Merge password lists\n''' + Fore.RESET)
 try:
     first_menu_choice = int(
         input(Fore.MAGENTA + '⹃ Enter number of your choice -> ' + Fore.RESET))
@@ -126,7 +126,7 @@ if(first_menu_choice == 1):
 
 # ======== # second menu for "just one password" # ======== #
     print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') +
-          '[1] - Show previous passwords\n[2] - Generate password')
+          f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Show previous passwords\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Generate password')
     try:
         second_menu_choice = int(input(Fore.GREEN + '\n⹃ Enter number of the part that you need -> ' + Fore.RESET)) 
     except KeyboardInterrupt:
@@ -134,7 +134,7 @@ if(first_menu_choice == 1):
     except ValueError:
             exit(Fore.RED + 'Error! Pay attention that your answer must be 1 or 2.')
     except:
-        print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
 # ======== # Show previous passwords # ======== #
     if (second_menu_choice == 1):
@@ -146,7 +146,7 @@ if(first_menu_choice == 1):
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
-            print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+            exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         try:
             with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'r') as fn:
                 password_data = json.load(fn)
@@ -163,11 +163,11 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
 # ======== # Generate a password # ======== #
     elif (second_menu_choice == 2): 
         __clear_screen__()
-        print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') + Fore.GREEN + '''[1] - Include Symbols ( e.g. !@#$%^&* )
-[2] - Include Numbers ( e.g. 12345 )
-[3] - Include Lowercase Characters ( e.g. abcdefgh )
-[4] - Include Uppercase Characters ( e.g. ABCDEFGH )
-[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \\ ' " ~ , ; : . < > )
+        print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') + Fore.GREEN + f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Symbols ( e.g. !@#$%^&* )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Numbers ( e.g. 12345 )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Lowercase Characters ( e.g. abcdefgh )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Uppercase Characters ( e.g. ABCDEFGH )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '5' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Ambiguous Characters( e.g. {"{ }"} [ ] ( ) / \\ ' " ~ , ; : . < > )
     ''' + Fore.RESET)
         try:
             included_obj: list[str] = input(
@@ -175,7 +175,7 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
-            print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+            exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
 # ======== # check if user Enter their choice correctly# ======== #
         for items in included_obj:
@@ -263,11 +263,11 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
 elif (first_menu_choice == 2):
 
 # ======== # second menu for "multiple passwords" # ======== #
-    print(Fore.YELLOW + pyfiglet.figlet_format('Password list', font='ANSI Shadow') + Fore.GREEN + '''[1] - Include Symbols ( e.g. !@#$%^&* )
-[2] - Include Numbers ( e.g. 12345 )
-[3] - Include Lowercase Characters ( e.g. abcdefgh )
-[4] - Include Uppercase Characters ( e.g. ABCDEFGH )
-[5] - Include Ambiguous Characters( e.g. { } [ ] ( ) / \\ ' " ~ , ; : . < > )
+    print(Fore.YELLOW + pyfiglet.figlet_format('Password list', font='ANSI Shadow') + Fore.GREEN + f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Symbols ( e.g. !@#$%^&* )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Numbers ( e.g. 12345 )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Lowercase Characters ( e.g. abcdefgh )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Uppercase Characters ( e.g. ABCDEFGH )
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '5' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Ambiguous Characters( e.g. {"{ }"} [ ] ( ) / \\ ' " ~ , ; : . < > )
 ''' + Fore.RESET)
     try:
         included_obj: list[str] = input(
@@ -275,7 +275,7 @@ elif (first_menu_choice == 2):
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except:
-        print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
 # ======== # check if user Enter their choice correctly # ======== #
     for items in included_obj:
@@ -402,7 +402,7 @@ elif (first_menu_choice == 4):
     try:
         try:
             which_method = int(input(
-                Fore.GREEN + '[1] - Method 1 [won\'t change the order]\n[2] - Method 2 [change the order, but faster]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
+                Fore.GREEN + f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "1" + Fore.GREEN}{Fore.LIGHTYELLOW_EX + "]" + Fore.GREEN} - Method 1 [won\'t change the order]\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.GREEN} - Method 2 [change the order, but faster]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
         except ValueError:
             exit(Fore.RED + '\nError! Only numbers are acceptable.' + Fore.RESET)
         UserFileName: str = input(
@@ -410,30 +410,49 @@ elif (first_menu_choice == 4):
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except:
-        print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
 # ======== # check if the user file actually exist # ======== #
     __exists_checker__(UserFileName)
     print(Fore.YELLOW + 'Starting the operation' + Fore.RESET)
     if (which_method == 1):
-        with open(UserFileName, 'r+') as fn:
-            the_file_content: list[str] = fn.readlines()
-
- # ======== # The last line doesn't have \n so when it sorted it will connect to another item # ======== #
-            the_file_content[-1] = the_file_content[-1] +'\n'
-            the_file_content: list[str] = list(dict.fromkeys(the_file_content).keys())
-            fn.writelines(the_file_content)
-            fn.close()
+        try:
+            FileContents: list[str] = open(UserFileName, 'r').readlines()
+        except IsADirectoryError:
+            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
+        except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to read the {UserFileName} file' + Fore.RESET)
+        if(len(FileContents) == 0):
+            exit(Fore.RED + 'The file is empty!' + Fore.RESET )
             
-# ======== # Using Fast Mode # ======== #
-    elif (which_method == 2):
-        print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
+# ======== # The last line doesn't have \n so when it sorted it will connect to another item # ======== #
+        FileContents[-1] = FileContents[-1] +'\n'
+        FileContents: list[str] = list(dict.fromkeys(FileContents).keys())
+        try:
+            open(UserFileName, 'w').writelines(FileContents)
+        except IsADirectoryError:
+            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
+        except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to write the {UserFileName} file' + Fore.RESET)
+        print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
 
-        with open(UserFileName, "r+") as fn:
-            the_file_content: set[str] = set(fn.readlines())
-            fn.writelines(the_file_content)
-            fn.close()
-        
+# ======== # Using Fast Mode # ======== #
+    elif (which_method == 2): 
+        try:
+            _FileContents: set[str] = set(open(UserFileName, 'r').readlines())
+        except IsADirectoryError:
+            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
+        except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to read the {UserFileName} file' + Fore.RESET)
+            
+        if(len(_FileContents) == 0):
+            exit(Fore.RED + 'The file is empty!' + Fore.RESET )
+        try:
+            open(UserFileName, 'w').writelines(_FileContents)
+        except IsADirectoryError:
+            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
+        except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to write the {UserFileName} file' + Fore.RESET)
         print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
     else:
         exit(Fore.RED + "Please enter the number of the part that you need correctly!" + Fore.RESET)
@@ -444,39 +463,48 @@ elif (first_menu_choice == 5):
             font='ANSI Shadow') + Fore.RESET)
     
 # ======== # getting all file name from user # ======== #
-    all_password_list_content: list = list() 
+    all_password_list_contents: list = list() 
     try:
-        file_names: str = input(
+        file_name: str = input(
             Fore.MAGENTA + '\n1 - Enter your file path -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except:
-        print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
-    __exists_checker__(file_names)
-    FileData: list[str] = open(file_names, 'r').readlines()
-        
+        exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+    __exists_checker__(file_name)
+    try:
+        FileData: list[str] = open(file_name, 'r').readlines()
+    except IsADirectoryError:
+            exit(Fore.RED + f'{file_name} is a directory. Please enter path of a file')
+    except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to read the {file_name} file' + Fore.RESET)   
     #The last line doesn't have \n so when it sorted it will connect to another item
     FileData[-1] +='\n'
-    all_password_list_content.extend(FileData)
+    all_password_list_contents.extend(FileData)
 
     # getting name of the file from user
     input_number = 2
     while True:
         try:
-            file_names = input(
+            file_names: str = input(
                 Fore.MAGENTA + f'{input_number} - Enter your file path -> ' + Fore.RESET)
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
             print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
-        __exists_checker__(file_names)
-        FileData = open(file_names, 'r').readlines()
+        __exists_checker__(file_name)
+        try:
+            FileData = open(file_name, 'r').readlines()
+        except IsADirectoryError:
+            exit(Fore.RED + f'{file_name} is a directory. Please enter path of a file')
+        except PermissionError:
+            exit(Fore.RED + f'We don\'t have permission to read the {file_name} file' + Fore.RESET)   
         
         #The last line doesn't have \n so when it sorted it will connect to another item
         FileData[-1] = FileData[-1] +'\n'
 
-        all_password_list_content.extend(FileData)
+        all_password_list_contents.extend(FileData)
         user_request: str = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
         if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
@@ -493,7 +521,7 @@ elif (first_menu_choice == 5):
     if path.exists(__file__.replace('PasswordGenerator.py', 'passwords.txt')):
         __rename_if_file_exist__()
     with open(__file__.replace('PasswordGenerator.py', file_name), 'w') as f:
-        f.writelines(all_password_list_content)
+        f.writelines(all_password_list_contents)
 
     print(Fore.YELLOW + 'Your file save as : ' + __file__.replace('PasswordGenerator.py', file_name) + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
