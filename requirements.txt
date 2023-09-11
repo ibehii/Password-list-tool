@@ -1,3 +1,5 @@
 colorama
 pyfiglet
 tqdm
+bcrypt
+zxcvbn
