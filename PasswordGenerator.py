@@ -4,14 +4,13 @@
 #  ____________________________________________
 
 # ======== # import built-in modules # ======== #
-from os import name, system, path, rename
+from os import name, system, path, rename, remove
 from secrets import choice
 from shutil import move
 from time import sleep
 from datetime import datetime
 from urllib.request import urlretrieve
 from urllib.error import URLError
-from tqdm import tqdm
 import json
 import string
 
@@ -27,6 +26,8 @@ if ("PasswordGenerator.py" not in __file__):
 try:
     from colorama import Fore, init
     import pyfiglet
+    from tqdm import tqdm
+    from zxcvbn import zxcvbn
 except ImportError:
     print('Make sure that you are connected to internet!')
     sleep(3)
@@ -126,7 +127,7 @@ if(first_menu_choice == 1):
 
 # ======== # second menu for "just one password" # ======== #
     print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') +
-          f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Show previous passwords\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Generate password')
+          f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "1"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Show previous passwords\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Generate password')
     try:
         second_menu_choice = int(input(Fore.GREEN + '\n⹃ Enter number of the part that you need -> ' + Fore.RESET)) 
     except KeyboardInterrupt:
@@ -141,24 +142,20 @@ if(first_menu_choice == 1):
         __clear_screen__()
         print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow'))
         try:
-            password_key: str = input(
-                Fore.MAGENTA + ' ⹃ Enter key of password -> ' + Fore.RESET)
+            PasswordName: str = input(
+                Fore.MAGENTA + ' ⹃ Enter name of password -> ' + Fore.RESET)
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
             exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         try:
-            with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'r') as fn:
-                password_data = json.load(fn)
-                print(Fore.MAGENTA + f'''The password is = {Fore.GREEN + password_data[password_key]['password'] + Fore.MAGENTA}
-The year it was saved = {Fore.GREEN + str(password_data[password_key]['Year']) + Fore.MAGENTA}
-The month it was saved = {Fore.GREEN + str(password_data[password_key]['month']) + Fore.MAGENTA}
-The day it was saved = {Fore.GREEN + str(password_data[password_key]['day']) + Fore.MAGENTA}
-The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) + ':' + str(password_data[password_key]['min']) + Fore.MAGENTA}''' + Fore.RESET)
+            with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'r') as fn:
+                password_data: dict = json.load(fn)[PasswordName]
+                print(Fore.MAGENTA + f'Your password is: {password_data["password"]}\nTime of creation: {password_data["date"]}' + Fore.RESET)
         except FileNotFoundError:
             exit(Fore.RED + 'Error! Data base didn\'t found.\nFirst generate some passwords and then use this part' + Fore.RESET) 
         except KeyError:
-            exit(Fore.RED + "Error! The password's key wasn't correct. Try again. " + Fore.RESET)
+            exit(Fore.RED + "Error! The password's name wasn't correct. Try again. " + Fore.RESET)
     
 # ======== # Generate a password # ======== #
     elif (second_menu_choice == 2): 
@@ -212,50 +209,101 @@ The time it was saved = {Fore.GREEN + str(password_data[password_key]['hour']) +
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
 
 
-        # the password
+        # The password
         generated_password: str = ''
 
-# ======== # Generating password # ======== #
+        # ======== # Generating password # ======== #
         try:
-            for _ in tqdm(range(password_length)):
+            for _ in range(password_length):
                 letter: str = choice(char_list)
                 generated_password: str = generated_password + letter
         except KeyboardInterrupt:
                 exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
         except:
             print(Fore.RED + 'Some thing went wrong try again!'+ Fore.RESET)
-        print(Fore.BLUE + 'Your password is : ' + generated_password + Fore.RESET)
+        print(Fore.BLUE + 'Your password is: ' + generated_password + Fore.RESET)
+        
+        # ======== # Checking Password Strength # ======== #
+        PasswordStrength = zxcvbn(generated_password)
+        PasswordScore = PasswordStrength['score']
+        PasswordCrackTime: str = PasswordStrength['crack_times_display']['offline_fast_hashing_1e10_per_second']
+        
+        if(PasswordScore == 0):
+            PasswordScore = Fore.RED + 'Very week' 
+            PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
+        elif(PasswordScore == 1):
+            PasswordScore = Fore.RED + 'Week' 
+            PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
+        elif(PasswordScore == 2):
+            PasswordScore = Fore.YELLOW + 'Not Bad' 
+            PasswordCrackTime: str = Fore.YELLOW + PasswordCrackTime + Fore.RESET
+        elif(PasswordScore == 3):
+            PasswordScore = Fore.CYAN + 'Good' 
+            PasswordCrackTime: str = Fore.CYAN + PasswordCrackTime + Fore.RESET
+        elif(PasswordScore == 4):
+            PasswordScore = Fore.GREEN + 'Strong' 
+            PasswordCrackTime: str = Fore.GREEN + PasswordCrackTime + Fore.RESET
+        
+        print(f'\n{Fore.BLUE}The generated password is a {PasswordScore + Fore.BLUE} password.' + Fore.RESET)
+        print(f'{Fore.BLUE}Estimated time to crack the password is: {PasswordCrackTime}')
 
-        if not path.exists(__file__.replace('PasswordGenerator.py', 'Just_one_password.json')):
-            with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'w') as f:
-                password_data = {
-                    'password_1':{'password': generated_password, 
-                                'Year': datetime.today().year,
-                                'month': datetime.now().strftime("%B"),
-                                'day':datetime.now().strftime("%d"),
-                                'hour':datetime.now().strftime("%H"),
-                                'min':datetime.now().strftime("%M")
-                                }
-                }
-                json.dump(password_data, f, indent=4)
-            print(Fore.LIGHTGREEN_EX + 'Your passwords by key of => ' + Fore.CYAN + 'password_1' + Fore.LIGHTGREEN_EX +
-                   '\nUse this key to access the password on Just "one password/Show previous passwords" section' + Fore.RESET)
-        else:
-            with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'r') as fn:
-                password_data: dict = json.load(fn)
-                len_password_data: int = len(password_data)
-                with open(__file__.replace('PasswordGenerator.py', 'Just_one_password.json'),'w') as fn:
-                    password_data[f'password_{len_password_data+1}'] = {
-                                'password': generated_password, 
-                                'Year': datetime.today().year,
-                                'month': datetime.now().strftime("%B"),
-                                'day':datetime.now().strftime("%d"),
-                                'hour':datetime.now().strftime("%H"),
-                                'min':datetime.now().strftime("%M")}
-                    json.dump(password_data, fn, indent=4)
-                
-                print(Fore.LIGHTGREEN_EX + 'Your passwords by key of => ' + Fore.CYAN + f'password_{len_password_data+1}' + Fore.LIGHTGREEN_EX +
-                 '\nUse this key to access the password on "Just one password/Show previous passwords" section' + Fore.RESET)
+        # ======== # Saving generated password # ======== #
+        try:
+            SavingPasswordPermission: str = input(Fore.GREEN + '\nDo you want to save the password? [Y/n] -> ' + Fore.RESET)
+        except KeyboardInterrupt:
+            exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
+        if(SavingPasswordPermission.lower() == 'yes' or SavingPasswordPermission.lower() == 'y' or SavingPasswordPermission == ''):
+            PasswordName: str = input(Fore.GREEN + '\nPick a name for you password -> ' + Fore.RESET)     
+            try:
+                if(path.getsize(__file__.replace('PasswordGenerator.py', 'one_password.json')) == 0):
+                    remove(__file__.replace('PasswordGenerator.py', 'one_password.json'))     
+            except:
+                pass
+                      
+            if not path.exists(__file__.replace('PasswordGenerator.py', 'one_password.json')):
+                with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'w') as f:
+                    password_data = {
+                        PasswordName:{'password': generated_password, 
+                                      'date': datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                                    }}
+                    json.dump(password_data, f, indent=4)
+                print(Fore.LIGHTGREEN_EX + 'You can access your password by entering ' + Fore.CYAN + PasswordName + Fore.LIGHTGREEN_EX + 'on Just "one password/Show previous passwords" section' + Fore.RESET)
+            else:
+                with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'r') as fn:
+                    try:
+                        PerviousPass: dict = json.load(fn)
+                    except json.decoder.JSONDecodeError:
+                        exit(Fore.RED + 'Failed to load the one_password.json file' + Fore.RESET)
+                        
+                    if(PasswordName in PerviousPass.keys()):
+                        try:
+                            OverwriteNamePermission: str = input(Fore.RED + 'This name is already exist. Do you want to overwrite it? [y/N] -> ' + Fore.RESET)
+                        except KeyboardInterrupt:
+                            exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
+                            
+                        if(OverwriteNamePermission.lower() == 'n' or OverwriteNamePermission.lower() == 'no' or OverwriteNamePermission == ''):
+                            while PasswordName in PerviousPass.keys():
+                                print(Fore.RED + '\nChoose something other than "' + PasswordName + '" that already exist' + Fore.RESET)
+                                try:
+                                    PasswordName: str = input(Fore.GREEN + 'Pick a name for you password -> ' + Fore.RESET)
+                                except KeyboardInterrupt:
+                                    exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
+                        elif(OverwriteNamePermission.lower() == 'y' or OverwriteNamePermission.lower() == 'yes'):
+                            PerviousPass.pop(PasswordName)
+                        else:
+                            print(Fore.RED + 'Your answer was valid, so we are going to overwrite the password' + Fore.RESET)
+                            PerviousPass.pop(PasswordName)
+                            
+                    password_data = {
+                        PasswordName:{'password': generated_password, 
+                                      'date': datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                                    }}
+
+                    CurrentlyPass: dict = {**PerviousPass, **password_data}
+                    
+                    with open(__file__.replace('PasswordGenerator.py', 'one_password.json'), 'w') as f:
+                        json.dump(CurrentlyPass, f, indent=4)
+                        print(Fore.LIGHTGREEN_EX + 'You can access your password by entering ' + Fore.CYAN + PasswordName + Fore.LIGHTGREEN_EX + 'on Just "one password/Show previous passwords" section' + Fore.RESET)
     else:
         exit(Fore.RED + 'Error! Please enter the number of the part that you need correctly!'+ Fore.RESET)                       
 
