@@ -7,9 +7,10 @@ This script is a password list manager that you can :
 - [Sort password list](#sort-password-list)
 - [Delete duplicate passwords in password list](#delete-duplicate-passwords-in-password-list)
 - [Merge password lists](#merge-password-lists)
+- [Check password strength]()
 ---
 # Dependencies 
-This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/) and [**colorama**](https://pypi.org/project/colorama/) as external library.\
+This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/), [**colorama**](https://pypi.org/project/colorama/), [**tqdm**](https://pypi.org/project/tqdm/) and [**zxcvbn**](https://pypi.org/project/zxcvbn/) as external library.\
 By running the program this libraries will be downloaded, but if there were any problem you can install them manually by following command :
 > pip install -r requirements.txt
 ---
@@ -83,9 +84,9 @@ If one password is repeated in password list this part of program will delete it
 
 On this menu we have two method **slow method** and **fast method**.
 
-**Slow method** use more memory and it's take long time to delete duplicates, but it doesn't disrupts the order of password list .
+**Method 1** is a little bit slower than method 2, but it doesn't disrupts the order of password list .
 
-**Fast method** It's much faster than slow mood but only problem is that it disrupts the order of your password list. 
+**Method 2** It's faster than method 1 but only problem is that it disrupts the order of your password list. 
 if you don't care about the order of your file use this method and then sort it with [sort password list](#sort-password-list) part.
 
 **If you get "file is not exists. Enter file name correctly !" error but you are sure that file exist try to enter complete path of file**
