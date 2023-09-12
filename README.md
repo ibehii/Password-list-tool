@@ -107,4 +107,13 @@ In this section, you can merge your password lists and make your password lists 
 **If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
 
 [**Explanation for finding complete path**](#finding-a-complete-path)
- 
+
+
+ # Check password strength
+
+![Screenshot from 2023-09-12 23-20-53](https://github.com/beh185/Password-list-tool/assets/79264026/d8390b39-42db-4b34-a035-954d5223e2b8)
+
+
+Think you have a strong password? Find out in this section.
+
+We check your password and give a score to your password. Check the amount of time it takes to crack your password and give you some suggestions to make a strong password.
