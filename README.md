@@ -90,7 +90,7 @@ if you don't care about the order of your file use this method and then sort it 
 
 **If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
 
-[**Explanation for finding complete path**](#finding-complete-path)
+[**Explanation for finding complete path**](#finding-a-complete-path)
 
 ---
 # Merge password lists
@@ -101,5 +101,5 @@ In this section, you can merge your password lists and make your password lists 
 
 **If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
 
-[**Explanation for finding complete path**](#finding-complete-path)
+[**Explanation for finding complete path**](#finding-a-complete-path)
  
