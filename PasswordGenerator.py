@@ -111,7 +111,8 @@ print(Fore.YELLOW + pyfiglet.figlet_format('Password tool', font='ANSI Shadow') 
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Generate password list
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Sort password list
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Delete duplicate password in password list
-{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '5' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Merge password lists\n''' + Fore.RESET)
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '5' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Merge password lists
+{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '6' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Check a password strength\n''' + Fore.RESET)
 try:
     first_menu_choice = int(
         input(Fore.MAGENTA + '⹃ Enter number of your choice -> ' + Fore.RESET))
@@ -235,7 +236,7 @@ if(first_menu_choice == 1):
             PasswordScore = Fore.RED + 'Week' 
             PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
         elif(PasswordScore == 2):
-            PasswordScore = Fore.YELLOW + 'Not Bad' 
+            PasswordScore = Fore.YELLOW + 'Normal' 
             PasswordCrackTime: str = Fore.YELLOW + PasswordCrackTime + Fore.RESET
         elif(PasswordScore == 3):
             PasswordScore = Fore.CYAN + 'Good' 
@@ -573,5 +574,47 @@ elif (first_menu_choice == 5):
 
     print(Fore.YELLOW + 'Your file save as : ' + __file__.replace('PasswordGenerator.py', file_name) + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
+
+# ======== # Check A Password Strength # ======== #
+elif(first_menu_choice == 6):
+    print(Fore.YELLOW + pyfiglet.figlet_format('Strength checker',
+        font='ANSI Shadow') + Fore.RESET)
+    try:
+        UserPassword: str = input(
+            Fore.MAGENTA + '⹃ Enter a password to find out its strength -> ' + Fore.RESET)
+    except KeyboardInterrupt:
+        exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
+        
+    result = zxcvbn(UserPassword)
+    
+    PasswordScore = result['score']
+    PasswordCrackTime: str = result['crack_times_display']['offline_fast_hashing_1e10_per_second']
+    warning: str = result['feedback']['warning']
+    suggestion: list = result['feedback']['suggestions']
+
+    if(PasswordScore == 0):
+        PasswordScore = Fore.RED + 'Very week'  
+        PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
+    elif(PasswordScore == 1):
+        PasswordScore = Fore.RED + 'Week' 
+        PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
+    elif(PasswordScore == 2):
+        PasswordScore = Fore.YELLOW + 'Normal' 
+        PasswordCrackTime: str = Fore.YELLOW + PasswordCrackTime + Fore.RESET
+    elif(PasswordScore == 3):
+        PasswordScore = Fore.CYAN + 'Good' 
+        PasswordCrackTime: str = Fore.CYAN + PasswordCrackTime + Fore.RESET
+    elif(PasswordScore == 4):
+        PasswordScore = Fore.GREEN + 'Strong' 
+        PasswordCrackTime: str = Fore.GREEN + PasswordCrackTime + Fore.RESET
+    
+    print(Fore.MAGENTA + f'\n- Your password is a "{PasswordScore + Fore.MAGENTA}" password.' + Fore.RESET)
+    print(Fore.MAGENTA + f'- Your password will be cracked approximately in {PasswordCrackTime}')
+    if len(warning) != 0:
+        print(Fore.RED + 'Warning: ' + warning + Fore.RESET)
+    if len(suggestion) != 0:
+        print(Fore.RED + 'Suggestion: ' + '\n'.join(suggestion) + Fore.RESET)
+        
+    
 else:
-        exit(Fore.RED + 'Error ! Pay attention that your answer must be a number between 1-5.' + Fore.RESET)
+        exit(Fore.RED + 'Error ! Pay attention that your answer must be a number between 1-6.' + Fore.RESET)
