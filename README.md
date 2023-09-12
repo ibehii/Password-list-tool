@@ -18,18 +18,20 @@ By running the program these libraries will be downloaded, but if there are any 
 https://youtu.be/hlkBS0gWI7g
 ---
 # Generate One Password
-![Screenshot from 2023-07-06 13-14-50](https://github.com/beh185/Password-list-tool/assets/79264026/e7749da4-97b7-4568-b64d-9417fbb78a1a) 
+
+![OnePasswordMenu](https://github.com/beh185/Password-list-tool/assets/79264026/718ccecd-9973-426f-a8f7-fa31b23767e2)
+
 
 In this part, you can generate one password quickly.
-It's really good for signing up on sites or apps when you want to use a strong password.
+It's a good idea to sign up on sites or apps when you want to use a strong password.
 
-![Screenshot from 2023-07-06 13-16-26](https://github.com/beh185/Password-list-tool/assets/79264026/99195d0b-15bc-4ac7-a108-4575c8476f1b)
-
-
-Also after generating the password it will be saved in a **json** file, so you can access it later by: -> running program -> Just one password -> Show previous passwords
+![ShowingPerviousPAss](https://github.com/beh185/Password-list-tool/assets/79264026/88c7abe1-1a9d-42ea-9ca6-782821b7c86d)
 
 
-![Screenshot from 2023-07-06 13-16-51](https://github.com/beh185/Password-list-tool/assets/79264026/9abe8fbf-33aa-4c6d-ab6f-150d7b8c5e59)
+Also after generating the password, it will be saved in a **json** file, so you can access it later by -> running program -> Just one password -> Show previous passwords
+
+![generateOnePassword](https://github.com/beh185/Password-list-tool/assets/79264026/5688830d-4be2-4851-9a53-d215e5066f56)
+
 
 In this menu, you can choose what characters you want in the password.\
 When you want to enter the number of your choices, pay attention that numbers must be between **1-5** -> `1 2 5` \
@@ -39,21 +41,24 @@ And use **spaces** when you want to separate
 
 In this menu, you choose the length of the password. For example, if you enter **8** the script will return a password with 8 characters. like -> `12345678`
 
+![OnePassAfterGeneration](https://github.com/beh185/Password-list-tool/assets/79264026/deaa4778-214a-48c0-ad1b-98382a1d4800)
+
+
 We save the passwords that you generate in the **one_password.json** file.
 
 ---
 # Generate password list
 In this part, you can generate passwords and export them as a txt file.
 
-![Screenshot from 2023-07-06 13-19-16](https://github.com/beh185/Password-list-tool/assets/79264026/17150533-900e-41bd-b08e-cc0da697b49c)
+![PasslistMEnu](https://github.com/beh185/Password-list-tool/assets/79264026/8073b9f3-5efa-4173-ac12-a45b33c2e6ef)
 
 
 In this menu, you can choose what characters you want in the password.\
 When you want to enter the number of your choices, pay attention that numbers must be between **1-5** -> `1 2 5` \
 And use **spaces** when you want to separate 
 
+![PasslistAfterGeneration](https://github.com/beh185/Password-list-tool/assets/79264026/d66d615e-2b98-42a1-9e6b-b43b11500621)
 
-![Screenshot from 2023-07-06 13-19-52](https://github.com/beh185/Password-list-tool/assets/79264026/b80461bb-cce8-4587-acc5-06a84d6a4160)
 
 In this menu, you choose the **number** of the password that the script will generate. In the second question, you choose the length of the password. For example, if you enter **8** the script will return a password with 8 characters. like -> `12345678`
 
@@ -80,7 +85,7 @@ In Linux:
 # Delete duplicate passwords in the password list
 If a password is repeated in the password list, this section will delete it and keep just one of them.
 
-![Screenshot from 2023-07-06 13-20-50](https://github.com/beh185/Password-list-tool/assets/79264026/131a58c3-e3ee-4bf0-9cac-d23e1dc6f19a)
+![DuplicateRemover](https://github.com/beh185/Password-list-tool/assets/79264026/8a263f3b-173e-4b4f-8e5d-6c825422fab5)
 
 
 **Method 1** is a little bit slower than method 2, but it doesn't disrupt the order of the password list.
