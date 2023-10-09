@@ -7,7 +7,7 @@ This script is a password list manager that you can :
 - [Sort password list](#sort-password-list)
 - [Delete duplicate passwords in password list](#delete-duplicate-passwords-in-password-list)
 - [Merge password lists](#merge-password-lists)
-- [Check password strength](#Check-password-strengt)
+- [Check password strength](#Check-password-strength)
 ---
 # Dependencies 
 This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/), [**colorama**](https://pypi.org/project/colorama/), [**tqdm**](https://pypi.org/project/tqdm/) and [**zxcvbn**](https://pypi.org/project/zxcvbn/) as external library.\
