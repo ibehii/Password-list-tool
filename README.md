@@ -7,11 +7,11 @@ This script is a password list manager that you can :
 - [Sort password list](#sort-password-list)
 - [Delete duplicate passwords in password list](#delete-duplicate-passwords-in-password-list)
 - [Merge password lists](#merge-password-lists)
-- [Check password strength]()
+- [Check password strength](#Check-password-strengt)
 ---
 # Dependencies 
 This program use [**pyfiglet**](https://pypi.org/project/pyfiglet/), [**colorama**](https://pypi.org/project/colorama/), [**tqdm**](https://pypi.org/project/tqdm/) and [**zxcvbn**](https://pypi.org/project/zxcvbn/) as external library.\
-By running the program these libraries will be downloaded, but if there are any problems you can install them manually by following the command :
+By running the program, these libraries will be downloaded, but if there are any problems, you can install them manually by following the command :
 > pip install -r requirements.txt
 ---
 # YouTube Tutorial
@@ -28,7 +28,7 @@ It's a good idea to sign up on sites or apps when you want to use a strong passw
 ![ShowingPerviousPAss](https://github.com/beh185/Password-list-tool/assets/79264026/88c7abe1-1a9d-42ea-9ca6-782821b7c86d)
 
 
-Also after generating the password, it will be saved in a **json** file, so you can access it later by -> running program -> Just one password -> Show previous passwords
+Also, after generating the password, it will be saved in a **json** file, so you can access it later by -> running program -> Just one password -> Show previous passwords
 
 ![generateOnePassword](https://github.com/beh185/Password-list-tool/assets/79264026/5688830d-4be2-4851-9a53-d215e5066f56)
 
@@ -39,7 +39,7 @@ And use **spaces** when you want to separate
 
 ![Screenshot from 2023-07-06 17-16-36](https://github.com/beh185/Password-list-tool/assets/79264026/afe1a5a5-a51e-458d-8387-6e802cec3e75)
 
-In this menu, you choose the length of the password. For example, if you enter **8** the script will return a password with 8 characters. like -> `12345678`
+In this menu, you choose the length of the password. For example, if you enter **8**, the script will return a password with 8 characters. like -> `12345678`
 
 ![OnePassAfterGeneration](https://github.com/beh185/Password-list-tool/assets/79264026/deaa4778-214a-48c0-ad1b-98382a1d4800)
 
@@ -60,20 +60,20 @@ And use **spaces** when you want to separate
 ![PasslistAfterGeneration](https://github.com/beh185/Password-list-tool/assets/79264026/d66d615e-2b98-42a1-9e6b-b43b11500621)
 
 
-In this menu, you choose the **number** of the password that the script will generate. In the second question, you choose the length of the password. For example, if you enter **8** the script will return a password with 8 characters. like -> `12345678`
+In this menu, you choose the number** of the password that the script will generate. In the second question, you choose the length of the password. For example, if you enter **8**, the script will return a password with 8 characters. like -> `12345678`
 
 ---
 # Sort password list
 
 ![Screenshot from 2023-07-06 13-20-28](https://github.com/beh185/Password-list-tool/assets/79264026/07a7b1a6-0439-4203-8145-d414cb518408)
 
-On this part, you can sort your password list. For example, if your password is like this `125, 142, 111` it will change to -> `111, 125, 142`.
+On this part, you can sort your password list. For example, if your password is like this `125, 142, 111`, it will change to -> `111, 125, 142`.
 
 The only thing that you must do is enter the name of your file :)\
-**If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
+**If you get the "file does not exist. Enter the file name correctly !" error, but you are sure that the file exists try to enter the complete path of the file**
 ## Finding a complete path
 In Windows:
-> Right-click the file then choose copy as a path option\
+> Right-click the file, then choose copy as a path option\
 
 ![select_copy_as_path](https://github.com/beh185/Password-list-tool/assets/79264026/1e22bdb7-b6b3-4bd8-95b8-c993899b058c)
 
@@ -90,10 +90,10 @@ If a password is repeated in the password list, this section will delete it and 
 
 **Method 1** is a little bit slower than method 2, but it doesn't disrupt the order of the password list.
 
-**Method 2** It's faster than method 1 but the only problem is that it disrupts the order of your password list. 
-if you don't care about the order of your file use this method and then sort it with the [sort password list](#sort-password-list) part.
+**Method 2** It's faster than method 1, but the only problem is that it disrupts the order of your password list. 
+if you don't care about the order of your file, use this method and then sort it with the [sort password list](#sort-password-list) part.
 
-**If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
+**If you get the "file does not exist. Enter the file name correctly !" error, but you are sure that the file exists try to enter the complete path of the file**
 
 [**Explanation for finding complete path**](#finding-a-complete-path)
 
@@ -104,7 +104,7 @@ if you don't care about the order of your file use this method and then sort it 
 
 In this section, you can merge your password lists and make your password lists into a single file.
 
-**If you get the "file does not exist. Enter file name correctly !" error but you are sure that the file exists try to enter the complete path of the file**
+**If you get the "file does not exist. Enter the file name correctly !" error, but you are sure that the file exists try to enter the complete path of the file**
 
 [**Explanation for finding complete path**](#finding-a-complete-path)
 
@@ -114,6 +114,6 @@ In this section, you can merge your password lists and make your password lists 
 ![Screenshot from 2023-09-12 23-20-53](https://github.com/beh185/Password-list-tool/assets/79264026/d8390b39-42db-4b34-a035-954d5223e2b8)
 
 
-Think you have a strong password? Find out in this section.
+Do you think you have a strong password? Find out in this section.
 
 We check your password and give a score to your password. Check the amount of time it takes to crack your password and give you some suggestions to make a strong password.
