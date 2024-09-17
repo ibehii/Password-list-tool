@@ -2,3 +2,5 @@ colorama
 pyfiglet
 tqdm
 zxcvbn
+requests
+prettytable
