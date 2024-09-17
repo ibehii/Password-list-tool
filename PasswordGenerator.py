@@ -332,62 +332,32 @@ elif (first_menu_choice == 4):
     print(Fore.YELLOW + pyfiglet.figlet_format('duplicate remover',
           font='ANSI Shadow') + Fore.RESET)
     try:
-        try:
-            which_method = int(input(
-                Fore.GREEN + f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "1" + Fore.GREEN}{Fore.LIGHTYELLOW_EX + "]" + Fore.GREEN} - Method 1 [won\'t change the order]\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.GREEN} - Method 2 [change the order, but faster]\n\n- Please, enter number of your choice -> ' + Fore.RESET))
-        except ValueError:
-            exit(Fore.RED + '\nError! Only numbers are acceptable.' + Fore.RESET)
-        UserFileName: str = input(
-            Fore.MAGENTA + '\n⹃ Enter path of your password list -> ' + Fore.RESET)
+        userFileName: Path = Path(input(
+            Fore.MAGENTA + '\n⹃ Enter path of your password list -> ' + Fore.RESET))
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except Exception:
         exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
 # ======== # check if the user file actually exist # ======== #
-    __exists_checker__(UserFileName)
+    if not userFileName.exists():
+        exit(Fore.RED + str(userFileName) + " is not exist" + Fore.RESET)
     print(Fore.YELLOW + 'Starting the operation' + Fore.RESET)
-    if (which_method == 1):
+    with open(userFileName, 'w') as file:
         try:
-            FileContents: list[str] = open(UserFileName, 'r').readlines()
+            FileContents: list[str] = file.readlines()
         except IsADirectoryError:
-            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
+            exit(Fore.RED + f'{userFileName} is a directory. Please enter path of a file')
         except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to read the {UserFileName} file' + Fore.RESET)
-        if(len(FileContents) == 0):
+            exit(Fore.RED + f'Program doesn\'t have permission to read the {userFileName} file' + Fore.RESET)
+        if(not FileContents):
             exit(Fore.RED + 'The file is empty!' + Fore.RESET )
             
 # ======== # The last line doesn't have \n so when it sorted it will connect to another item # ======== #
         FileContents[-1] = FileContents[-1] +'\n'
         FileContents: list[str] = list(dict.fromkeys(FileContents).keys())
-        try:
-            open(UserFileName, 'w').writelines(FileContents)
-        except IsADirectoryError:
-            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
-        except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to write the {UserFileName} file' + Fore.RESET)
+        file.writelines(FileContents)
         print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
-
-# ======== # Using Fast Mode # ======== #
-    elif (which_method == 2): 
-        try:
-            _FileContents: set[str] = set(open(UserFileName, 'r').readlines())
-        except IsADirectoryError:
-            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
-        except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to read the {UserFileName} file' + Fore.RESET)
-            
-        if(len(_FileContents) == 0):
-            exit(Fore.RED + 'The file is empty!' + Fore.RESET )
-        try:
-            open(UserFileName, 'w').writelines(_FileContents)
-        except IsADirectoryError:
-            exit(Fore.RED + f'{UserFileName} is a directory. Please enter path of a file')
-        except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to write the {UserFileName} file' + Fore.RESET)
-        print(Fore.GREEN + "The duplicate passwords are now deleted" + Fore.RESET)
-    else:
-        exit(Fore.RED + "Please enter the number of the part that you need correctly!" + Fore.RESET)
 
 # ======== # Merge password lists # ======== #
 elif (first_menu_choice == 5):
