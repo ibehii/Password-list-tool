@@ -365,51 +365,35 @@ elif (first_menu_choice == 5):
             font='ANSI Shadow') + Fore.RESET)
     
 # ======== # getting all file name from user # ======== #
-    FilesContents: list = list() 
-    try:
-        file_name: str = input(
-            Fore.MAGENTA + '\n1 - Enter your file path -> ' + Fore.RESET)
-    except KeyboardInterrupt:
-        exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-    except:
-        exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
-    __exists_checker__(file_name)
-    try:
-        FileData: list[str] = open(file_name, 'r').readlines()
-    except IsADirectoryError:
-            exit(Fore.RED + f'{file_name} is a directory. Please enter path of a file')
-    except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to read the {file_name} file' + Fore.RESET)   
-    #The last line doesn't have \n so when it sorted it will connect to another item
-    FileData[-1] +='\n'
-    FilesContents.extend(FileData)
+    FilesContents: list = []
+
 
     # getting name of the file from user
-    input_number = 2
+    input_number: int = 1
     while True:
         try:
-            file_names: str = input(
-                Fore.MAGENTA + f'{input_number} - Enter your file path -> ' + Fore.RESET)
+            file_path: Path = Path(input(
+                Fore.MAGENTA + f'\n{input_number} - Enter your file path -> ' + Fore.RESET))
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-        except:
-            print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
-
-        __exists_checker__(file_name)
+        except Exception:
+            exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        if not file_path.exists():
+            print(Fore.RED, file_path, " is not exist!" + Fore.RESET)
+            continue
         try:
-            FileData = open(file_name, 'r').readlines()
+            FileData: list[str] = open(file_path, 'r').readlines()
         except IsADirectoryError:
-            exit(Fore.RED + f'{file_name} is a directory. Please enter path of a file')
+                exit(Fore.RED + f'{file_path} is a directory. Please enter path of a file' + Fore.RESET)
         except PermissionError:
-            exit(Fore.RED + f'We don\'t have permission to read the {file_name} file' + Fore.RESET)   
-        
+                exit(Fore.RED + f'We don\'t have permission to read the {file_path} file' + Fore.RESET)   
         #The last line doesn't have \n so when it sorted it will connect to another item
-        FileData[-1] = FileData[-1] +'\n'
-
+        FileData[-1] +='\n'
         FilesContents.extend(FileData)
+
         user_request: str = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
-        if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
+        if user_request.lower() in ['y', 'yes', '']:
             _clear_screen()
             print(Fore.YELLOW + pyfiglet.figlet_format('Pass list merger',
                   font='ANSI Shadow') + Fore.RESET)
@@ -420,12 +404,12 @@ elif (first_menu_choice == 5):
     print(Fore.BLUE + 'On it ... ' + Fore.RESET)
 
 # ======== # set file name # ======== #
-    if path.exists(__file__.replace('PasswordGenerator.py', 'passwords.txt')):
-        __rename_if_file_exist__()
-    with open(__file__.replace('PasswordGenerator.py', file_name), 'w') as f:
+    if (current_path / file_name).exists():
+        _rename_if_file_exist()
+    with open((current_path / file_name), 'w') as f:
         f.writelines(FilesContents)
 
-    print(Fore.YELLOW + 'Your file save as : ' + __file__.replace('PasswordGenerator.py', file_name) + Fore.RESET)
+    print(Fore.YELLOW + 'Your file save as : ' + str(current_path / file_name) + Fore.RESET)
     print(Fore.GREEN + 'Done !' + Fore.RESET)
 
 # ======== # Check A Password Strength # ======== #
