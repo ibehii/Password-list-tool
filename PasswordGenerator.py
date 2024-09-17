@@ -4,110 +4,54 @@
 #  ____________________________________________
 
 # ======== # import built-in modules # ======== #
-from os import name, system, path, rename, remove
+from os import name
 from secrets import choice
-from shutil import move
 from time import sleep
 from datetime import datetime
-from urllib.request import urlretrieve
-from urllib.error import URLError
-import json
-import string
+from pathlib import Path
+from subprocess import run
+import sqlite3
 
-# ======== # Rename Project To Its Original name # ======== #
-if ("PasswordGenerator.py" not in __file__):
-    if name == "nt":
-        CurrentlyFileName : str = __file__.split("\\")[-1]
-    else:
-        CurrentlyFileName : str = __file__.split("/")[-1]
-    rename(CurrentlyFileName, "PasswordGenerator.py")
+from lib import figlet_font_downloader
+from lib import characters
+from lib import initializer
 
+current_path: Path = Path(__file__).parent.resolve()
 # ======== # import external modules # ======== #
 try:
-    from colorama import Fore, init
+    from colorama import Fore, init, just_fix_windows_console
     import pyfiglet
     from tqdm import tqdm
     from zxcvbn import zxcvbn
-except ImportError:
-    print('Make sure that you are connected to internet!')
-    sleep(3)
-    system(f'pip install -r {__file__.replace("PasswordGenerator.py", "requirements.txt")}')
-    exit('> Run the program again!')
-print(Fore.CYAN + "Please wait ..." + Fore.RESET)
+    from prettytable import PrettyTable, DOUBLE_BORDER
+except ImportError as error:
+    exit(f'A required library is missing! {error}. Try using `pip install <library>`')
 
 init()
+just_fix_windows_console()
+initializer()
 
 # ======== # functions # ======== #
-def __clear_screen__() -> None:
-    if (name == 'nt'):
-        system('cls')
-    else:
-        system('clear')
+_clear_screen = lambda: run('cls') if name == 'nt' else run('clear')
 
-
-# for adding characters to this list
-char_list: list[str] = list()
-
-def numbers() -> None:
-    global char_list
-    char_list.extend(string.digits)
-
-def lowercase() -> None:
-    global char_list
-    char_list.extend(string.ascii_lowercase)
-
-def uppercase() -> None:
-    global char_list
-    char_list.extend(string.ascii_uppercase)
+# ======== # Install Pyfiglet ANSI Shadow Font # ======== #
+if not (Path(pyfiglet.__file__).parent.resolve() / 'fonts'  / 'ANSI Shadow.flf').exists():
+    figlet_font_downloader()
     
-def symbols() -> None:
-    characters: list[str] = ['!', '@', '#', '$', '%', '^', '&', '*', '=']
-    global char_list
-    char_list.extend(characters)
-
-def Ambiguous() -> None:
-    characters: list[str] = ['{', '}', '[', ']', '(', ')', '/', '\\', "'", '"', '~' ',', ';', ':', '.', '<', '>']
-    global char_list
-    char_list.extend(characters)
-
-# If passwords.txt exist adding number at end of it 
+# ======== # If passwords.txt exist adding number at end of it # ======== #
 file_name : str = 'passwords.txt'
-def __rename_if_file_exist__() -> None:
+def _rename_if_file_exist() -> None:
     file_name_number = 1
-    while path.exists(f'passwords{str(file_name_number)}.txt'):
+    while current_path.joinpath(f'passwords{str(file_name_number)}.txt').exists():
         file_name_number += 1
     global file_name
     file_name = f'passwords{str(file_name_number)}.txt'
 
-def __exists_checker__(FilePath) -> None:
-    if not path.exists(FilePath):
-        exit(
-            Fore.RED + f'"{FilePath}" is not exists. Enter file name correctly !' + Fore.RESET)
-
-
-# ======== # Install Pyfiglet ANSI Shadow Font # ======== #
-if name == 'nt':
-    pyfiglet_path: str = pyfiglet.__file__.replace('__init__.py', 'fonts\\')
-else:
-    pyfiglet_path: str = pyfiglet.__file__.replace('__init__.py', 'fonts/')
-if not path.exists(pyfiglet_path + 'ANSI Shadow.flf'):
-        try:
-            move(__file__.replace('PasswordGenerator.py', 'ANSI Shadow.flf'), pyfiglet_path + 'ANSI Shadow.flf')
-        except FileNotFoundError:
-            print(Fore.RED + __file__.replace('PasswordGenerator.py', 'ANSI Shadow.flf') + ' Was Not Found!\n' + Fore.RESET)
-            print(Fore.YELLOW + 'Downloading the required font!' + Fore.RESET)
-            try:
-                urlretrieve(
-                "https://github.com/xero/figlet-fonts/raw/master/ANSI%20Shadow.flf", 'ANSI Shadow.flf')
-                move('ANSI Shadow.flf', pyfiglet_path + 'ANSI Shadow.flf')
-            except URLError:
-                exit(Fore.RED + "Couldn't connect to server.\nCheck your internet connection and try again" + Fore.RESET)
-
-__clear_screen__()
+_clear_screen()
 
 # ======== # Starting Menu # ======== #
 print(Fore.YELLOW + pyfiglet.figlet_format('Password tool', font='ANSI Shadow') + Fore.GREEN +
-      f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Just one password  
+      f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Generate a password for login  
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Generate password list
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Sort password list
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Delete duplicate password in password list
@@ -115,53 +59,72 @@ print(Fore.YELLOW + pyfiglet.figlet_format('Password tool', font='ANSI Shadow') 
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '6' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Check a password strength\n''' + Fore.RESET)
 try:
     first_menu_choice = int(
-        input(Fore.MAGENTA + '⹃ Enter number of your choice -> ' + Fore.RESET))
+        input(Fore.MAGENTA + '⹃ Pick a number -> ' + Fore.RESET))
 except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
 except ValueError:
-    exit(Fore.RED + 'Error ! Pay attention that your answer must be a number between 1-5.' + Fore.RESET)
+    exit(Fore.RED + 'Error ! Pay attention that your answer must be a number' + Fore.RESET)
 
-__clear_screen__()
+_clear_screen()
 
-# ======== # One Password # ======== #
+# ======== # login password # ======== #
 if(first_menu_choice == 1):
 
-# ======== # second menu for "just one password" # ======== #
-    print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') +
+    # ======== # sub menu for "login password" # ======== #
+    print(Fore.YELLOW + pyfiglet.figlet_format('login password', font='ANSI Shadow') +
           f'{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "1"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Show previous passwords\n{Fore.LIGHTYELLOW_EX + "["}{Fore.LIGHTGREEN_EX + "2"}{Fore.LIGHTYELLOW_EX + "]" + Fore.YELLOW} - Generate password')
     try:
-        second_menu_choice = int(input(Fore.GREEN + '\n⹃ Enter number of the part that you need -> ' + Fore.RESET)) 
+        sub_menu = int(input(Fore.GREEN + '\n⹃ Pick a number -> ' + Fore.RESET)) 
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except ValueError:
             exit(Fore.RED + 'Error! Pay attention that your answer must be 1 or 2.')
-    except:
+    except Exception:
         exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
-# ======== # Show previous passwords # ======== #
-    if (second_menu_choice == 1):
-        __clear_screen__()
-        print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow'))
+    # ======== # Show previous passwords # ======== #
+    if (sub_menu == 1):
+        _clear_screen()
+        print(Fore.YELLOW + pyfiglet.figlet_format('login password', font='ANSI Shadow'))
         try:
-            PasswordName: str = input(
-                Fore.MAGENTA + ' ⹃ Enter name of password -> ' + Fore.RESET)
+            PasswordReminder: str = input(
+                Fore.MAGENTA + ' ⹃ Enter a reminder for filter result.\nPress enter to display all password -> ' + Fore.RESET)
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-        except:
-            exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        
         try:
-            with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'r') as fn:
-                password_data: dict = json.load(fn)[PasswordName]
-                print(Fore.MAGENTA + f'Your password is: {password_data["password"]}\nTime of creation: {password_data["date"]}' + Fore.RESET)
+            # ====== # Confecting to database that stored passwords # ====== #
+            connection: sqlite3.Connection = sqlite3.connect(current_path / 'lib' / 'db' /'.passwords.db')
+            cursor: sqlite3.Cursor = connection.cursor()
+            cursor.execute("SELECT * FROM password")
+            all_data: list[tuple] = cursor.fetchall()
+            
+            # ==== # checking that there is at list one password in database # ==== #
+            if not all_data:
+                exit(Fore.RED + 'Error! No password found in database.' + Fore.RESET) 
+                
+            # ====== #Creating table  # ====== #
+            table = PrettyTable()
+            table.field_names = ['The password', 'Creation date', 'Reminder']
+            table.set_style(DOUBLE_BORDER)
+                
+            for data in all_data:
+                passwords, date, reminder =  data
+                if PasswordReminder and PasswordReminder in reminder:
+                    table.add_row([passwords, date, reminder])
+                elif not PasswordReminder:
+                    table.add_row([passwords, date, reminder])
+                    
+            else:
+                table.get_string()
+                
         except FileNotFoundError:
-            exit(Fore.RED + 'Error! Data base didn\'t found.\nFirst generate some passwords and then use this part' + Fore.RESET) 
-        except KeyError:
-            exit(Fore.RED + "Error! The password's name wasn't correct. Try again. " + Fore.RESET)
+            exit(Fore.RED + 'Error! Database was not found.\nFirst generate some passwords.' + Fore.RESET) 
     
 # ======== # Generate a password # ======== #
-    elif (second_menu_choice == 2): 
-        __clear_screen__()
-        print(Fore.YELLOW + pyfiglet.figlet_format('single password', font='ANSI Shadow') + Fore.GREEN + f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Symbols ( e.g. !@#$%^&* )
+    elif (sub_menu == 2): 
+        _clear_screen()
+        print(Fore.YELLOW + pyfiglet.figlet_format('login password', font='ANSI Shadow') + Fore.GREEN + f'''{Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '1' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Symbols ( e.g. !@#$%^&* )
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '2'}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Numbers ( e.g. 12345 )
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '3' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Lowercase Characters ( e.g. abcdefgh )
 {Fore.LIGHTYELLOW_EX + '['}{Fore.LIGHTGREEN_EX + '4' + Fore.GREEN}{Fore.LIGHTYELLOW_EX + ']' + Fore.GREEN} - Include Uppercase Characters ( e.g. ABCDEFGH )
@@ -172,8 +135,8 @@ if(first_menu_choice == 1):
                 Fore.MAGENTA + ' ⹃ Enter number of your choices. e.g : 1 2 5 -> ' + Fore.RESET).split()
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-        except:
-            exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
+        except Exception as error:
+            exit(Fore.RED + f'Some things went wrong, Please try again ! {error}' + Fore.RED)
 
 # ======== # check if user Enter their choice correctly# ======== #
         for items in included_obj:
@@ -184,19 +147,20 @@ if(first_menu_choice == 1):
             if len(items) != 1 or int(items) > 5:
                 exit(Fore.RED + 'Error! Pay attention that your answer must be numbers between 1-5 and separated by spaces')
         
-        # make passwords_list complete
+        # ======== # Adding chosen letter to password list # ======== #
+        char_list: list = []
         if ('1' in included_obj):
-            symbols()
+            char_list.extend(characters.symbols())
         if ('2' in included_obj):
-            numbers()
+            char_list.extend(characters.numbers())
         if('3' in included_obj):
-            lowercase()
+            char_list.extend(characters.lowercase())
         if('4' in included_obj):
-            uppercase()
+            char_list.extend(characters.uppercase())
         if('5' in included_obj):
-            Ambiguous()
+            char_list.extend(characters.Ambiguous())
 
-        __clear_screen__()
+        _clear_screen()
 
 # ======== # Third Menu For One Password # ======== #
         print(Fore.YELLOW + pyfiglet.figlet_format('passwords',
@@ -220,8 +184,8 @@ if(first_menu_choice == 1):
                 generated_password: str = generated_password + letter
         except KeyboardInterrupt:
                 exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-        except:
-            print(Fore.RED + 'Some thing went wrong try again!'+ Fore.RESET)
+        except Exception as error:
+            print(Fore.RED + f'Some thing went wrong try again! {error}'+ Fore.RESET)
         print(Fore.BLUE + 'Your password is: ' + generated_password + Fore.RESET)
         
         # ======== # Checking Password Strength # ======== #
@@ -229,82 +193,26 @@ if(first_menu_choice == 1):
         PasswordScore = PasswordStrength['score']
         PasswordCrackTime: str = PasswordStrength['crack_times_display']['offline_fast_hashing_1e10_per_second']
         
-        if(PasswordScore == 0):
-            PasswordScore = Fore.RED + 'Very week' 
-            PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
-        elif(PasswordScore == 1):
-            PasswordScore = Fore.RED + 'Week' 
-            PasswordCrackTime: str = Fore.RED + PasswordCrackTime + Fore.RESET
-        elif(PasswordScore == 2):
-            PasswordScore = Fore.YELLOW + 'Normal' 
-            PasswordCrackTime: str = Fore.YELLOW + PasswordCrackTime + Fore.RESET
-        elif(PasswordScore == 3):
-            PasswordScore = Fore.CYAN + 'Good' 
-            PasswordCrackTime: str = Fore.CYAN + PasswordCrackTime + Fore.RESET
-        elif(PasswordScore == 4):
-            PasswordScore = Fore.GREEN + 'Strong' 
-            PasswordCrackTime: str = Fore.GREEN + PasswordCrackTime + Fore.RESET
+        PasswordScores: dict = {"0" :"Very week", "1":"Week", "2":"Normal", "3":"Good", "4":"Strong"}
         
-        print(f'\n{Fore.BLUE}The generated password is a {PasswordScore + Fore.BLUE} password.' + Fore.RESET)
-        print(f'{Fore.BLUE}Estimated time to crack the password is: {PasswordCrackTime}')
+        print(f'\n{Fore.BLUE}The generated password is a {Fore.RED if 0 <= PasswordScore <= 1 else Fore.GREEN + PasswordScores[str(PasswordScore)] + Fore.BLUE} password.' + Fore.RESET)
+        print(f'{Fore.BLUE}Estimated time to crack the password is: {Fore.RED if 0 <= PasswordScore <= 1 else Fore.GREEN + PasswordCrackTime}')
 
         # ======== # Saving generated password # ======== #
         try:
             SavingPasswordPermission: str = input(Fore.GREEN + '\nDo you want to save the password? [Y/n] -> ' + Fore.RESET)
         except KeyboardInterrupt:
             exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-        if(SavingPasswordPermission.lower() == 'yes' or SavingPasswordPermission.lower() == 'y' or SavingPasswordPermission == ''):
-            PasswordName: str = input(Fore.GREEN + '\nPick a name for you password -> ' + Fore.RESET)     
-            try:
-                if(path.getsize(__file__.replace('PasswordGenerator.py', 'one_password.json')) == 0):
-                    remove(__file__.replace('PasswordGenerator.py', 'one_password.json'))     
-            except:
-                pass
-                      
-            if not path.exists(__file__.replace('PasswordGenerator.py', 'one_password.json')):
-                with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'w') as f:
-                    password_data = {
-                        PasswordName:{'password': generated_password, 
-                                      'date': datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                                    }}
-                    json.dump(password_data, f, indent=4)
-                print(Fore.LIGHTGREEN_EX + 'You can access your password by entering ' + Fore.CYAN + PasswordName + Fore.LIGHTGREEN_EX + 'on Just "one password/Show previous passwords" section' + Fore.RESET)
-            else:
-                with open(__file__.replace('PasswordGenerator.py', 'one_password.json'),'r') as fn:
-                    try:
-                        PerviousPass: dict = json.load(fn)
-                    except json.decoder.JSONDecodeError:
-                        exit(Fore.RED + 'Failed to load the one_password.json file' + Fore.RESET)
-                        
-                    if(PasswordName in PerviousPass.keys()):
-                        try:
-                            OverwriteNamePermission: str = input(Fore.RED + 'This name is already exist. Do you want to overwrite it? [y/N] -> ' + Fore.RESET)
-                        except KeyboardInterrupt:
-                            exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-                            
-                        if(OverwriteNamePermission.lower() == 'n' or OverwriteNamePermission.lower() == 'no' or OverwriteNamePermission == ''):
-                            while PasswordName in PerviousPass.keys():
-                                print(Fore.RED + '\nChoose something other than "' + PasswordName + '" that already exist' + Fore.RESET)
-                                try:
-                                    PasswordName: str = input(Fore.GREEN + 'Pick a name for you password -> ' + Fore.RESET)
-                                except KeyboardInterrupt:
-                                    exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-                        elif(OverwriteNamePermission.lower() == 'y' or OverwriteNamePermission.lower() == 'yes'):
-                            PerviousPass.pop(PasswordName)
-                        else:
-                            print(Fore.RED + 'Your answer was valid, so we are going to overwrite the password' + Fore.RESET)
-                            PerviousPass.pop(PasswordName)
-                            
-                    password_data = {
-                        PasswordName:{'password': generated_password, 
-                                      'date': datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                                    }}
+        if(SavingPasswordPermission.lower() in ['yes', 'y', '']):
+            PasswordReminder: str = input(Fore.GREEN + '\nSet a reminder for this password -> ' + Fore.RESET)
+            # ====== # Confecting to database that stored passwords # ====== #
+            connection: sqlite3.Connection = sqlite3.connect(current_path / 'lib' / 'db' / '.passwords.db')
+            cursor: sqlite3.Cursor = connection.cursor()
+            cursor.execute("INSERT INTO password VALUES (?, ?, ?)", (generated_password, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), PasswordReminder))
+            connection.commit()
+            connection.close()
+            print(Fore.LIGHTGREEN_EX + 'You can access your password at "Login password -> Show previous passwords" section' + Fore.RESET)
 
-                    CurrentlyPass: dict = {**PerviousPass, **password_data}
-                    
-                    with open(__file__.replace('PasswordGenerator.py', 'one_password.json'), 'w') as f:
-                        json.dump(CurrentlyPass, f, indent=4)
-                        print(Fore.LIGHTGREEN_EX + 'You can access your password by entering ' + Fore.CYAN + PasswordName + Fore.LIGHTGREEN_EX + 'on Just "one password/Show previous passwords" section' + Fore.RESET)
     else:
         exit(Fore.RED + 'Error! Please enter the number of the part that you need correctly!'+ Fore.RESET)                       
 
@@ -323,7 +231,7 @@ elif (first_menu_choice == 2):
             Fore.MAGENTA + ' ⹃ Enter number of your choices. e.g : 1 2 5 -> ' + Fore.RESET).split()
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-    except:
+    except Exception:
         exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
 
 # ======== # check if user Enter their choice correctly # ======== #
@@ -334,19 +242,19 @@ elif (first_menu_choice == 2):
             exit(Fore.RED + 'Error! Pay attention that your answer must be numbers between 1-5 and separated by spaces')
         if len(items) != 1 or int(items) > 5:
             exit(Fore.RED + 'Error! Pay attention that your answer must be numbers between 1-5 and separated by spaces')
-    # add obj that user want to password_list
-    if ('1' in included_obj):
-        symbols()
-    if ('2' in included_obj):
-        numbers()
-    if('3' in included_obj):
-        lowercase()
-    if('4' in included_obj):
-        uppercase()
-    if('5' in included_obj):
-        Ambiguous()
-
-    __clear_screen__()
+        # ======== # Adding chosen letter to password list # ======== #
+        char_list: list = []
+        if ('1' in included_obj):
+            char_list.extend(characters.symbols())
+        if ('2' in included_obj):
+            char_list.extend(characters.numbers())
+        if('3' in included_obj):
+            char_list.extend(characters.lowercase())
+        if('4' in included_obj):
+            char_list.extend(characters.uppercase())
+        if('5' in included_obj):
+            char_list.extend(characters.Ambiguous())
+    _clear_screen()
     
 # ======== # Third Menu For "multiple passwords" # ======== #
     print(Fore.YELLOW + pyfiglet.figlet_format('password',
@@ -364,51 +272,25 @@ elif (first_menu_choice == 2):
         print(Fore.RED + 'Warning! You are going to produce huge amount of passwords this may take a long time and takes resources' + Fore.RESET)
         sleep(3)
 
-    while path.exists(__file__.replace('PasswordGenerator.py', file_name)):
-        __rename_if_file_exist__()
-    PasswordFilePath: str = __file__.replace('PasswordGenerator.py', file_name)
-
+    while (current_path / file_name).exists():
+        _rename_if_file_exist()
+        
     try:
-# ======== # Generating The Passwords # ======== #
-        if(password_number <= 500_000):
-            generated_passwords: set = set()
-            temp_generated_password: str = str()
+        def password_generator() :
+            # ====== # Generating The Passwords # ====== #
             # first 'for' is for number of password that must generate
             for _ in tqdm(range(password_number)):
+                temp_generated_password: str = ""
                 # second 'for' is for length of password that must generate
-                for _1 in range(password_length):
+                for _ in range(password_length):
                     temp_generated_password += choice(char_list)
-                generated_passwords.add(temp_generated_password + '\n')
-                temp_generated_password = str()
-
-# ======== # add generated passwords to file # ======== #
-            with open(PasswordFilePath, 'w') as f:
-                f.writelines(generated_passwords)
-                f.close()
-            print(Fore.BLUE + '\nDeleting duplicate passwords ...' + Fore.RESET)
-        else:
-            generated_passwords : set = set()
-            temp_generated_password: str = str()
-            open(PasswordFilePath, 'w')
-            for _ in tqdm(range(password_number)):
-                # second 'for' is for length of password that must generate
-                for _1 in range(password_length):
-                    temp_generated_password += choice(char_list)
-                generated_passwords.add(temp_generated_password + '\n')
-                temp_generated_password: str = str()
-
-# =========== # Adding generated password until now to file for saving resources # =========== #
-                if(len(temp_generated_password) == int(password_number / 20)):
-                    with open(PasswordFilePath, 'a') as f:
-                        f.writelines(generated_passwords)
-                        generated_passwords.clear()
-            else:
-                with open(PasswordFilePath, 'a') as f:
-                    f.writelines(generated_passwords)
-                    generated_passwords.clear()
+                yield temp_generated_password + '\n'
+        with open(current_path / file_name, 'a+') as file:
+            for generated_password in password_generator():
+                file.write(generated_password)
 
         print(Fore.GREEN + '\nThe operation was successful!' + Fore.RESET)
-        print(Fore.YELLOW + '\nPassword list save as : ' + PasswordFilePath + Fore.RESET)
+        print(Fore.YELLOW + '\nPassword list save as : ' + str(current_path / file_name) + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
     except MemoryError:
@@ -419,27 +301,28 @@ elif (first_menu_choice == 3):
     print(Fore.YELLOW + pyfiglet.figlet_format('sort password',
           font='ANSI Shadow') + Fore.RESET)
     try:
-        file_name = input(
-            Fore.MAGENTA + '⹃ Enter your password list file path -> ' + Fore.RESET)
+        file_path: Path = Path(input(
+            Fore.MAGENTA + '⹃ Enter your password list file path -> ' + Fore.RESET))
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-    except:
+    except Exception:
         print(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
-    __exists_checker__(file_name)
+    if not file_path.exists():
+        exit(Fore.RED + str(file_path) + " is not exist" + Fore.RESET)
     print(Fore.YELLOW + '\nOn it ...' + Fore.RESET)
     with open(file_name, 'r') as f:
         sorted_fn : list = f.readlines()
         sorted_fn[-1] += '\n'
 # ======== # Sort List # ======== #
-        sorted_fn.sort()
+        sorted_fn = sorted(sorted_fn)
         f.close()
 
 # ======== # add it to file # ======== #
-    with open(file_name, 'w') as fn:
+    with open(current_path / file_name, 'w') as fn:
         fn.writelines(sorted_fn)
         fn.close()
-    print(Fore.GREEN + '\n- Your password list is sorted' + Fore.RESET)
+    print(Fore.GREEN + f'\n- Your password list is sorted and saved at {str(current_path / file_name)}' + Fore.RESET)
 
 
 # ======== # delete duplicate # ======== #
@@ -458,7 +341,7 @@ elif (first_menu_choice == 4):
             Fore.MAGENTA + '\n⹃ Enter path of your password list -> ' + Fore.RESET)
     except KeyboardInterrupt:
         exit(Fore.RED + '\nThe operation canceled by user' + Fore.RESET)
-    except:
+    except Exception:
         exit(Fore.RED + 'Some things went wrong, Please try again !' + Fore.RED)
         
 # ======== # check if the user file actually exist # ======== #
@@ -557,7 +440,7 @@ elif (first_menu_choice == 5):
         user_request: str = input(
             Fore.YELLOW + '\nWant to add more password list ? [Y/n] ' + Fore.RESET)
         if user_request.lower() == 'y' or user_request.lower() == 'yes' or user_request == '':
-            __clear_screen__()
+            _clear_screen()
             print(Fore.YELLOW + pyfiglet.figlet_format('Pass list merger',
                   font='ANSI Shadow') + Fore.RESET)
             input_number += 1
