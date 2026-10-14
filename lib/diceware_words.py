@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Diceware wordlist for memorable passphrase generation.
 
 Contains a curated selection of clean, memorable, distinct English words.

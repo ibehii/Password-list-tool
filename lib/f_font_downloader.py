@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Pyfiglet font installer and fallback helper."""
 
 from __future__ import annotations

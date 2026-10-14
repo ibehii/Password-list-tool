@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Rich-powered terminal user interface and interactive menus."""
 
 from __future__ import annotations

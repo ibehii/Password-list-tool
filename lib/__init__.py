@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Password Tool library package."""
 
 from lib.characters import Ambiguous, lowercase, numbers, symbols, uppercase

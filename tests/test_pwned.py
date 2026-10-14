@@ -75,3 +75,74 @@ def test_hibp_wordlist_scan() -> None:
             assert total_breached == 1
             output_content = compromised_path.read_text(encoding="utf-8")
             assert f"{test_word}:12" in output_content
+
+
+def test_hibp_prefix_cache_hit_detection() -> None:
+    """Verify that multiple passwords sharing the same prefix hit cache and are both recorded."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        wordlist_path = Path(temp_dir) / "shared_prefix_words.txt"
+        compromised_path = Path(temp_dir) / "compromised_shared.txt"
+
+        word_one = "pass_5"
+        word_two = "pass_901"
+        hash_one = hashlib.sha1(word_one.encode("utf-8")).hexdigest().upper()
+        hash_two = hashlib.sha1(word_two.encode("utf-8")).hexdigest().upper()
+
+        assert hash_one[:5] == hash_two[:5]  # Both share '30F74' prefix
+        suffix_one = hash_one[5:]
+        suffix_two = hash_two[5:]
+
+        wordlist_path.write_text(f"{word_one}\n{word_two}\n", encoding="utf-8")
+
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = f"{suffix_one}:42\n{suffix_two}:99\n"
+
+        with patch("requests.get", return_value=mock_resp) as mock_get:
+            total_checked, total_breached = check_wordlist_pwned(
+                wordlist_path=wordlist_path,
+                output_compromised_path=compromised_path,
+                delay_between_requests=0.0,
+            )
+            # Only one HTTP request should have been made due to LRU cache
+            assert mock_get.call_count == 1
+            assert total_checked == 2
+            assert total_breached == 2
+            content = compromised_path.read_text(encoding="utf-8")
+            assert f"{word_one}:42" in content
+            assert f"{word_two}:99" in content
+
+
+def test_hibp_rate_limit_backoff() -> None:
+    """Verify check_wordlist_pwned backs off and retries when encountering HTTP 429."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        wordlist_path = Path(temp_dir) / "retry_words.txt"
+        compromised_path = Path(temp_dir) / "retry_out.txt"
+
+        test_word = "rate_limit_test"
+        hash_val = hashlib.sha1(test_word.encode("utf-8")).hexdigest().upper()
+        suffix = hash_val[5:]
+
+        wordlist_path.write_text(f"{test_word}\n", encoding="utf-8")
+
+        resp_429 = MagicMock()
+        resp_429.status_code = 429
+
+        resp_200 = MagicMock()
+        resp_200.status_code = 200
+        resp_200.text = f"{suffix}:7\n"
+
+        with patch("requests.get", side_effect=[resp_429, resp_200]) as mock_get, \
+             patch("time.sleep", return_value=None) as mock_sleep:
+            total_checked, total_breached = check_wordlist_pwned(
+                wordlist_path=wordlist_path,
+                output_compromised_path=compromised_path,
+                delay_between_requests=0.0,
+            )
+            assert mock_get.call_count == 2
+            assert mock_sleep.called
+            assert total_checked == 1
+            assert total_breached == 1
+            content = compromised_path.read_text(encoding="utf-8")
+            assert f"{test_word}:7" in content
+

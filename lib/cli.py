@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Command-line interface (CLI) parser and subcommands dispatcher."""
 
 from __future__ import annotations

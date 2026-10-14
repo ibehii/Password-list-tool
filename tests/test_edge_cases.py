@@ -169,6 +169,9 @@ def test_edge_case_generators_boundary_values() -> None:
     mask_literal = list(generate_mask_passwords("ExactMatch123"))
     assert mask_literal == ["ExactMatch123"]
 
+    # Empty mask produces 0 combinations
+    assert list(generate_mask_passwords("")) == []
+
     # CUPP with completely empty profile fields
     empty_profile = TargetProfile()
     cupp_words = list(generate_cupp_wordlist(empty_profile))

@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from lib.wordlist_tools import (
+    _atomic_replace,
     count_lines,
     external_sort,
     filter_wordlist,
@@ -170,3 +171,42 @@ def test_split_wordlist() -> None:
         assert count_lines(created_chunks[1]) == 10
         # Third chunk has 5 lines
         assert count_lines(created_chunks[2]) == 5
+
+
+def test_external_sort_return_stats() -> None:
+    """Verify external_sort with return_stats=True returns exact line metrics."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_file = Path(temp_dir) / "stats_input.txt"
+        words = ["echo", "bravo", "alpha", "bravo", "charlie", "alpha"]
+        input_file.write_text("\n".join(words) + "\n", encoding="utf-8")
+
+        output_file = Path(temp_dir) / "stats_output.txt"
+        res_path, read_lines, written_lines = external_sort(
+            input_path=input_file,
+            output_path=output_file,
+            chunk_lines=2,
+            deduplicate=True,
+            return_stats=True,
+        )
+
+        assert res_path == output_file
+        assert read_lines == 6
+        assert written_lines == 4
+        assert count_lines(output_file) == 4
+
+
+def test_atomic_replace_helper() -> None:
+    """Verify _atomic_replace correctly swaps source to destination atomically."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        source_file = Path(temp_dir) / "source.txt"
+        dest_file = Path(temp_dir) / "destination.txt"
+
+        source_file.write_text("fresh content\n", encoding="utf-8")
+        dest_file.write_text("old content\n", encoding="utf-8")
+
+        _atomic_replace(source_file, dest_file)
+
+        assert not source_file.exists()
+        assert dest_file.exists()
+        assert dest_file.read_text(encoding="utf-8") == "fresh content\n"
+

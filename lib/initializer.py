@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Initialization routine for storage directories and font assets."""
 
 from __future__ import annotations

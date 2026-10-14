@@ -3,7 +3,7 @@
 # 🔐 Password List Tool
 ### *High-Performance, Zero-OOM Wordlist Engine, Encrypted Vault & Security Toolkit for Python*
 
-[![Release](https://img.shields.io/badge/Release-v3.2.0-blue?style=for-the-badge&logo=github)](https://github.com/ibehii/Password-list-tool/releases)
+[![Release](https://img.shields.io/badge/Release-v3.2.1-blue?style=for-the-badge&logo=github)](https://github.com/ibehii/Password-list-tool/releases)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/ibehii/Password-list-tool)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge&logo=open-source-initiative&logoColor=white)](LICENSE)

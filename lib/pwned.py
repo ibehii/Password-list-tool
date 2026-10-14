@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Have I Been Pwned (HIBP) k-anonymity password breach checking.
 
 Uses the SHA-1 k-anonymity protocol where only the first 5 characters of the SHA-1 hash
@@ -97,20 +100,28 @@ def check_wordlist_pwned(
                 url = HIBP_API_URL.format(prefix=prefix)
                 request_headers = {"User-Agent": USER_AGENT, "Add-Padding": "true"}
                 prefix_map = {}
-                try:
-                    resp = http_client.get(url, headers=request_headers, timeout=10)
-                    if resp.status_code == 200:
-                        for item_line in resp.text.splitlines():
-                            parts = item_line.strip().split(":")
-                            if len(parts) == 2:
-                                try:
-                                    prefix_map[parts[0].upper()] = int(parts[1])
-                                except ValueError:
-                                    pass
-                    elif resp.status_code == 429:
-                        time.sleep(1.0)
-                except requests.RequestException:
-                    pass
+
+                max_retries = 3
+                retry_delay = 1.0
+                for attempt_idx in range(max_retries):
+                    try:
+                        resp = http_client.get(url, headers=request_headers, timeout=10)
+                        if resp.status_code == 200:
+                            for item_line in resp.text.splitlines():
+                                parts = item_line.strip().split(":")
+                                if len(parts) == 2:
+                                    try:
+                                        prefix_map[parts[0].upper()] = int(parts[1])
+                                    except ValueError:
+                                        pass
+                            break
+                        elif resp.status_code == 429:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2.0
+                        else:
+                            break
+                    except requests.RequestException:
+                        break
 
                 prefix_cache[prefix] = prefix_map
                 if len(prefix_cache) > MAX_PREFIX_CACHE_ENTRIES:
@@ -119,15 +130,15 @@ def check_wordlist_pwned(
                 if delay_between_requests > 0:
                     time.sleep(delay_between_requests)
 
-                breach_count = prefix_map.get(suffix, 0)
-                if breach_count > 0:
-                    output_stream.write(f"{candidate_password}:{breach_count}\n")
-                    total_breached += 1
+            breach_count = prefix_map.get(suffix, 0)
+            if breach_count > 0:
+                output_stream.write(f"{candidate_password}:{breach_count}\n")
+                total_breached += 1
 
-                if progress_callback and total_checked % 25 == 0:
-                    progress_callback(total_checked, total_breached)
+            if progress_callback and total_checked % 25 == 0:
+                progress_callback(total_checked, total_breached)
 
-                if max_check_count > 0 and total_checked >= max_check_count:
-                    break
+            if max_check_count > 0 and total_checked >= max_check_count:
+                break
 
     return total_checked, total_breached

@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Secure encrypted SQLite password vault.
 
 Implements PBKDF2HMAC (SHA-256) key derivation and AES-256 authenticated encryption (Fernet).
@@ -15,9 +18,10 @@ import secrets
 import sqlite3
 import threading
 import time
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Generator, Optional
 
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
@@ -70,16 +74,21 @@ class PasswordVault:
         """Check if the database file exists."""
         return self.db_path.exists()
 
-    def _get_connection(self) -> sqlite3.Connection:
-        """Open a database connection ensuring parent directory and restrictive permissions."""
+    @contextmanager
+    def _get_connection(self) -> Generator[sqlite3.Connection, None, None]:
+        """Open a database connection ensuring restrictive permissions and guaranteed closure."""
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(self.db_path)
-        if self.db_path.exists():
-            try:
-                os.chmod(self.db_path, 0o600)
-            except OSError:
-                pass
-        return connection
+        try:
+            if self.db_path.exists():
+                try:
+                    os.chmod(self.db_path, 0o600)
+                except OSError:
+                    pass
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     def is_legacy_unencrypted(self) -> bool:
         """Detect whether the database has old unencrypted schema without vault_meta."""
@@ -168,6 +177,13 @@ class PasswordVault:
 
     def lock(self) -> None:
         """Lock the vault and clear in-memory key."""
+        if self._master_salt is not None:
+            try:
+                byte_buffer = bytearray(self._master_salt)
+                for byte_idx in range(len(byte_buffer)):
+                    byte_buffer[byte_idx] = 0
+            except Exception:
+                pass
         self._fernet = None
         self._master_salt = None
 

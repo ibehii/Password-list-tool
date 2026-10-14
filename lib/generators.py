@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """Password and wordlist generation engines.
 
 Includes:
@@ -165,7 +168,11 @@ def parse_mask(mask_expression: str) -> list[list[str]]:
 
 def generate_mask_passwords(mask_expression: str) -> Generator[str, None, None]:
     """Generate all password combinations satisfying a mask using lazy streaming."""
+    if not mask_expression:
+        return
     token_lists = parse_mask(mask_expression)
+    if not token_lists:
+        return
     for combination_tuple in itertools.product(*token_lists):
         yield "".join(combination_tuple)
 

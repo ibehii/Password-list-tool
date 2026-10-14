@@ -1,3 +1,6 @@
+#  GitHub: https://github.com/ibehii
+#  Telegram: https://t.me/dr_xz
+#  ____________________________________________
 """High-performance, streaming wordlist manipulation engine.
 
 Designed for massive password lists (multi-gigabyte files) with minimum RAM
@@ -13,7 +16,7 @@ import shutil
 import tempfile
 from contextlib import ExitStack
 from pathlib import Path
-from typing import Callable, Generator, Iterable, Optional
+from typing import Callable, Generator, Iterable, Optional, Union
 
 # Read and write buffer size: 64 KB for fast streaming I/O
 STREAM_BUFFER_SIZE: int = 64 * 1024
@@ -24,6 +27,15 @@ _RE_LOWER: re.Pattern = re.compile(r"[a-z]")
 _RE_UPPER: re.Pattern = re.compile(r"[A-Z]")
 _RE_DIGIT: re.Pattern = re.compile(r"[0-9]")
 _RE_SYMBOL: re.Pattern = re.compile(r"[^a-zA-Z0-9]")
+
+
+def _atomic_replace(source_path: Path, target_path: Path) -> None:
+    """Safely and atomically replace target_path with source_path."""
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        os.replace(source_path, target_path)
+    except OSError:
+        shutil.move(str(source_path), str(target_path))
 
 
 def count_lines(file_path: Path) -> int:
@@ -77,12 +89,14 @@ def external_sort(
     reverse: bool = False,
     deduplicate: bool = False,
     progress_callback: Optional[Callable[[int], None]] = None,
-) -> Path:
+    return_stats: bool = False,
+) -> Union[Path, tuple[Path, int, int]]:
     """Sort multi-gigabyte files using external merge sort.
 
     Memory complexity: O(chunk_lines) during partitioning, O(batch_size) during merge.
     Time complexity: O(N log N).
     Supports inline deduplication during chunking and merging for 2x faster deduping.
+    When return_stats is True, returns (output_path, total_read, total_written) without extra disk passes.
     """
     input_path = Path(input_path).resolve()
     target_output_path = Path(output_path).resolve() if output_path else input_path
@@ -92,12 +106,15 @@ def external_sort(
 
     temp_directory = _create_temp_workspace(target_output_path.parent, prefix="pass_tool_sort_")
     chunk_paths: list[Path] = []
+    chunk_sizes: list[int] = []
     chunk_counter = 0
+    total_read_lines = 0
 
     try:
         current_chunk: list[str] = []
         with open(input_path, "r", encoding="utf-8", errors="ignore", buffering=STREAM_BUFFER_SIZE) as source_stream:
             for raw_line in source_stream:
+                total_read_lines += 1
                 normalized_line = raw_line if raw_line.endswith("\n") else f"{raw_line}\n"
                 current_chunk.append(normalized_line)
 
@@ -112,6 +129,7 @@ def external_sort(
                         temp_out.writelines(current_chunk)
 
                     chunk_paths.append(temp_chunk_path)
+                    chunk_sizes.append(len(current_chunk))
                     chunk_counter += 1
                     current_chunk.clear()
 
@@ -130,16 +148,20 @@ def external_sort(
                     temp_out.writelines(current_chunk)
 
                 chunk_paths.append(temp_chunk_path)
+                chunk_sizes.append(len(current_chunk))
                 current_chunk.clear()
 
         final_temp_output = temp_directory / "merged_output.tmp"
+        total_written_lines = 0
 
         # Handle empty file edge case
         if not chunk_paths:
             final_temp_output.touch()
+            total_written_lines = 0
         elif len(chunk_paths) == 1:
             # Single chunk: avoid redundant heapq merge pass
-            shutil.move(str(chunk_paths[0]), str(final_temp_output))
+            _atomic_replace(chunk_paths[0], final_temp_output)
+            total_written_lines = chunk_sizes[0]
         else:
             # Hierarchical multi-way merge in bounded batches
             active_chunks = list(chunk_paths)
@@ -199,11 +221,14 @@ def external_sort(
                             if previous_line is None or line_item != previous_line:
                                 final_out.write(line_item)
                                 previous_line = line_item
+                                total_written_lines += 1
                         else:
                             final_out.write(line_item)
+                            total_written_lines += 1
 
-        target_output_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(final_temp_output), str(target_output_path))
+        _atomic_replace(final_temp_output, target_output_path)
+        if return_stats:
+            return target_output_path, total_read_lines, total_written_lines
         return target_output_path
 
     finally:
@@ -232,17 +257,16 @@ def streaming_deduplicate(
         return 0, 0
 
     if sort_first:
-        # Single-pass sort + deduplicate
-        total_read = count_lines(input_path)
-        external_sort(
+        # Zero-extra-pass sort + deduplicate: counts are captured directly during sorting
+        _, total_read, total_unique = external_sort(
             input_path=input_path,
             output_path=target_output_path,
             chunk_lines=chunk_lines,
             reverse=False,
             deduplicate=True,
             progress_callback=progress_callback,
+            return_stats=True,
         )
-        total_unique = count_lines(target_output_path)
         return total_read, total_unique
 
     # Streaming adjacent deduplication for already-sorted input
@@ -263,8 +287,7 @@ def streaming_deduplicate(
                     previous_line = normalized_line
                     total_written += 1
 
-        target_output_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(deduped_temp_output), str(target_output_path))
+        _atomic_replace(deduped_temp_output, target_output_path)
         return total_read, total_written
 
     finally:
@@ -309,7 +332,7 @@ def merge_wordlists(
             _, unique_count = streaming_deduplicate(input_path=temp_output_path, output_path=output_path, sort_first=True)
             return unique_count
 
-        shutil.move(str(temp_output_path), str(output_path))
+        _atomic_replace(temp_output_path, output_path)
         return total_lines_streamed
 
     finally:
@@ -372,8 +395,14 @@ def filter_wordlist(
                 if compiled_regex and not compiled_regex.search(cleaned_word):
                     continue
 
-                if allowed_charset and not all(char_item in allowed_charset for char_item in cleaned_word):
-                    continue
+                if allowed_charset:
+                    has_disallowed_char = False
+                    for char_element in cleaned_word:
+                        if char_element not in allowed_charset:
+                            has_disallowed_char = True
+                            break
+                    if has_disallowed_char:
+                        continue
 
                 output_stream.write(f"{cleaned_word}\n")
                 total_matched += 1
@@ -381,7 +410,7 @@ def filter_wordlist(
                 if progress_callback and total_scanned % 50_000 == 0:
                     progress_callback(total_scanned, total_matched)
 
-        shutil.move(str(temp_output_path), str(output_path))
+        _atomic_replace(temp_output_path, output_path)
         return total_scanned, total_matched
 
     finally:
@@ -497,7 +526,7 @@ def mutate_wordlist(
                 if progress_callback and input_count % 10_000 == 0:
                     progress_callback(input_count, mutations_count)
 
-        shutil.move(str(temp_output_path), str(output_path))
+        _atomic_replace(temp_output_path, output_path)
         return input_count, mutations_count
 
     finally:
