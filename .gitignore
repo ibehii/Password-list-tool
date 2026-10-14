@@ -1,4 +1,10 @@
 lib/db
 passwords.txt
 .venv
-lib/__pycache__
+__pycache__/
+lib/__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+dist/
+build/

@@ -1,6 +1,9 @@
-colorama
-pyfiglet
-tqdm
-zxcvbn
-requests
-prettytable
+colorama>=0.4.6
+pyfiglet>=1.0.4
+tqdm>=4.66.0
+zxcvbn>=4.4.28
+requests>=2.31.0
+prettytable>=3.9.0
+rich>=13.0.0
+cryptography>=41.0.0
+pyperclip>=1.8.2

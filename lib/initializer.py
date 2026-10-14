@@ -1,26 +1,15 @@
-#  GitHub: https://github.com/ibehii
-#  Telegram: https://T.me/BZHNAM
-#  e-mail: Behii@tutanota.com
-#  ____________________________________________
+"""Initialization routine for storage directories and font assets."""
 
-# ======== # Import Part # ======== #
+from __future__ import annotations
+
 from pathlib import Path
-import sqlite3
+from lib.f_font_downloader import figlet_font_downloader
 
-current_path: Path = Path(__file__).parent.resolve()
+CURRENT_PATH: Path = Path(__file__).resolve().parent
+
 
 def initializer() -> None:
-    if not (database_path := current_path / "db" / ".passwords.db").exists():
-        if not database_path.parent.exists():
-            database_path.parent.mkdir()
-        database_path.touch()
-        connection: sqlite3.Connection = sqlite3.connect(database_path)
-        cursor: sqlite3.Cursor = connection.cursor()
-        
-        cursor.execute("""CREATE TABLE password ( password TEXT,
-            date TEXT,
-            reminder TEXT)""")
-        connection.commit()
-        connection.close()
-        
-    
+    """Ensure database directory and required assets exist."""
+    db_directory = CURRENT_PATH / "db"
+    db_directory.mkdir(parents=True, exist_ok=True)
+    figlet_font_downloader()

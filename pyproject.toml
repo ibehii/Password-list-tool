@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "password-list-tool"
+version = "3.2.0"
+description = "High-performance, memory-efficient password generator, wordlist engine, and encrypted vault"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Behnam", email = "Behii@tutanota.com" }
+]
+urls = { Homepage = "https://github.com/ibehii/Password-list-tool", Telegram = "https://t.me/dr_xz" }
+keywords = [
+    "password-generator",
+    "wordlist",
+    "hashcat",
+    "cupp",
+    "diceware",
+    "vault",
+    "hibp",
+    "external-sort",
+    "cybersecurity"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Security :: Cryptography",
+    "Environment :: Console"
+]
+dependencies = [
+    "colorama>=0.4.6",
+    "pyfiglet>=1.0.4",
+    "tqdm>=4.66.0",
+    "zxcvbn>=4.4.28",
+    "requests>=2.31.0",
+    "prettytable>=3.9.0",
+    "rich>=13.0.0",
+    "cryptography>=41.0.0",
+    "pyperclip>=1.8.2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0"
+]
+
+[project.scripts]
+pass-tool = "lib.cli:main"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.setuptools]
+py-modules = ["PasswordGenerator"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lib*", "lib"]

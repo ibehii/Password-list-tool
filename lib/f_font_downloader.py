@@ -1,33 +1,83 @@
-#  GitHub: https://github.com/ibehii
-#  Telegram: https://T.me/BZHNAM
-#  e-mail: Behii@tutanota.com
-#  ____________________________________________
+"""Pyfiglet font installer and fallback helper."""
 
-# ======== # Import Part # ======== #
-from requests import get, exceptions
-from shutil import move
-from colorama import Fore
+from __future__ import annotations
+
+import shutil
 from pathlib import Path
-import pyfiglet
+from typing import Optional
 
-# ======== # Path of folder that script is on it # ======== #
-current_directory_path: Path = Path(__file__).resolve().parent
+try:
+    import pyfiglet
+except ImportError:
+    pyfiglet = None
 
-# ======== # Path of pyfiglet font file # ======== #
-pyfiglet_path: Path = Path(pyfiglet.__file__.replace('__init__.py', 'fonts')) / 'ANSI Shadow.flf'
+ROOT_PROJECT_PATH: Path = Path(__file__).resolve().parent.parent
+LOCAL_LIB_PATH: Path = Path(__file__).resolve().parent
 
-# ======== # Download required font for figlet # ======== #
-def figlet_font_downloader() -> None:
+
+def get_pyfiglet_fonts_dir() -> Optional[Path]:
+    """Locate pyfiglet fonts directory."""
+    if not pyfiglet:
+        return None
     try:
-        move(current_directory_path / 'ANSI Shadow.flf', pyfiglet_path.resolve())
-    except FileNotFoundError:
-        print(Fore.RED + str(current_directory_path.joinpath('ANSI Shadow.flf').resolve()) +  ' Was Not Found!\n' + Fore.RESET)
-        print(Fore.YELLOW + 'Downloading the required font!' + Fore.RESET)
-        
-        # ======== # Download the font # ======== #
+        fonts_dir = Path(pyfiglet.__file__).resolve().parent / "fonts"
+        fonts_dir.mkdir(parents=True, exist_ok=True)
+        return fonts_dir
+    except Exception:
+        return None
+
+
+def figlet_font_downloader() -> bool:
+    """Ensure ANSI Shadow.flf is available to pyfiglet."""
+    if not pyfiglet:
+        return False
+
+    fonts_dir = get_pyfiglet_fonts_dir()
+    if not fonts_dir:
+        return False
+
+    target_font_path = fonts_dir / "ANSI Shadow.flf"
+    if target_font_path.exists():
+        return True
+
+    # Check root project directory and lib directory for bundled font
+    candidate_locations = [
+        ROOT_PROJECT_PATH / "ANSI Shadow.flf",
+        LOCAL_LIB_PATH / "ANSI Shadow.flf",
+        Path.cwd() / "ANSI Shadow.flf",
+    ]
+
+    for candidate_path in candidate_locations:
+        if candidate_path.is_file():
+            try:
+                shutil.copy2(candidate_path, target_font_path)
+                return True
+            except Exception:
+                continue
+
+    # Attempt network download if local font file not found
+    try:
+        import requests
+        download_url = "https://github.com/xero/figlet-fonts/raw/master/ANSI%20Shadow.flf"
+        response = requests.get(download_url, timeout=5)
+        if response.status_code == 200:
+            target_font_path.write_bytes(response.content)
+            return True
+    except Exception:
+        pass
+
+    return False
+
+
+def render_figlet_banner(text: str, preferred_font: str = "ANSI Shadow") -> str:
+    """Render figlet banner with graceful fallback to standard font."""
+    if not pyfiglet:
+        return text
+
+    try:
+        return pyfiglet.figlet_format(text, font=preferred_font)
+    except Exception:
         try:
-            fontContent: bytes = get("https://github.com/xero/figlet-fonts/raw/master/ANSI%20Shadow.flf").content
-            with pyfiglet_path as pyf:
-                pyf.write_bytes(fontContent)
-        except (exceptions.ConnectionError, exceptions.Timeout):
-            exit(Fore.RED + "Couldn't connect to server.\nCheck your internet connection and try again" + Fore.RESET)
+            return pyfiglet.figlet_format(text, font="standard")
+        except Exception:
+            return text
