@@ -728,6 +728,34 @@ def handle_vault_menu(vault: PasswordVault) -> None:
             break
 
 
+def handle_about_us() -> None:
+    """Display information about Password List Tool, mission, and author contact."""
+    clear_screen()
+    print_banner("About Password List Tool")
+
+    about_table = Table(show_header=False, box=None, padding=(0, 2))
+    about_table.add_column("Key", style="bold cyan")
+    about_table.add_column("Value")
+
+    about_table.add_row("Project Name:", "[bold white]Password List Tool[/bold white] (v3.2.1)")
+    about_table.add_row("Mission:", "Zero-OOM, streaming wordlist engine, targeted generation & local encrypted vault.")
+    about_table.add_row("Developer:", "[bold green]Behnam[/bold green]")
+    about_table.add_row("GitHub:", "[link=https://github.com/ibehii]https://github.com/ibehii[/link]")
+    about_table.add_row("Telegram:", "[link=https://t.me/dr_xz]https://t.me/dr_xz[/link]")
+    about_table.add_row("Contact Email:", "Behii@tutanota.com")
+    about_table.add_row("License:", "MIT Open Source License")
+
+    console.print(Panel(about_table, title="[bold green]About Us & Project Mission[/bold green]", border_style="green"))
+
+    summary_text = (
+        "[dim]Engineered for cybersecurity researchers, sysadmins, and privacy advocates.\n"
+        "Features streaming external merge sort, constant memory footprint on 50GB+ files,\n"
+        "AES-256 encrypted SQLite vault, and SHA-1 k-anonymity breach detection.[/dim]"
+    )
+    console.print(Panel(summary_text, border_style="cyan"))
+    pause_for_user()
+
+
 # =========================================================================
 # Main Interactive Loop
 # =========================================================================
@@ -759,13 +787,14 @@ def run_interactive_menu() -> None:
             menu_table.add_row("[12]", "Have I Been Pwned check (SHA-1 k-anonymity API)")
             menu_table.add_row("[13]", "Encrypted Password Vault (.passwords.db, AES-256)")
             menu_table.add_row("[14]", "Check password strength & crack time (zxcvbn)")
+            menu_table.add_row("[15]", "About Us & Project Info (developer, mission, contacts)")
             menu_table.add_row("[0]", "Exit")
 
             console.print(Panel(menu_table, title="[bold green]Main Menu[/bold green]", border_style="green"))
 
             choice = Prompt.ask(
                 "[bold magenta]Pick an option[/bold magenta]",
-                choices=[str(val) for val in range(15)],
+                choices=[str(val) for val in range(16)],
                 default="1",
             )
 
@@ -797,6 +826,8 @@ def run_interactive_menu() -> None:
                 handle_vault_menu(vault)
             elif choice == "14":
                 handle_strength_menu()
+            elif choice == "15":
+                handle_about_us()
             elif choice == "0":
                 console.print("[cyan]Goodbye![/cyan]")
                 break
@@ -807,3 +838,4 @@ def run_interactive_menu() -> None:
         except Exception as error_unhandled:
             console.print(f"\n[bold red]An unexpected error occurred: {error_unhandled}[/bold red]")
             pause_for_user()
+
